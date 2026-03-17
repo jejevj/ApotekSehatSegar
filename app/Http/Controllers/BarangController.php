@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
 class BarangController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:barang.view')->only('index', 'data', 'productsData');
+        $this->middleware('permission:barang.create')->only('create', 'store');
+        $this->middleware('permission:barang.update')->only('edit', 'update');
+        $this->middleware('permission:barang.delete')->only('destroy');
+    }
+
     public function index()
     {
         return view('barang.index');
@@ -19,14 +28,17 @@ class BarangController extends Controller
         return DataTables::of($barangs)
             ->addIndexColumn()
             ->addColumn('aksi', function ($barang) {
-                if (empty($barang->kode_barcode)) {
-                    return ''; // Atau tombol non-aktif
+                $buttons = '';
+                if (auth()->user()->hasPermission('barang.update')) {
+                    $buttons .= '<a href="' . route('barang.edit', $barang->kode_barcode) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ';
                 }
-                return '<a href="' . route('barang.edit', $barang->kode_barcode) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ' .
-                       '<form action="' . route('barang.destroy', $barang->kode_barcode) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Apakah Anda Yakin Akan Mengahapus Data ini???\')">' .
-                       csrf_field() .
-                       method_field('DELETE') .
-                       '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+                if (auth()->user()->hasPermission('barang.delete')) {
+                    $buttons .= '<form action="' . route('barang.destroy', $barang->kode_barcode) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Apakah Anda Yakin Akan Mengahapus Data ini???\')">' .
+                               csrf_field() .
+                               method_field('DELETE') .
+                               '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+                }
+                return $buttons;
             })
             ->rawColumns(['aksi'])
             ->make(true);

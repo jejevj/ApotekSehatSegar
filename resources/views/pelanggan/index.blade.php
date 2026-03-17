@@ -5,19 +5,20 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card" style="border-radius: 10px;">
             <div class="header">
-                <h2>DATA ROLE</h2>
-                @if(auth()->user()->hasPermission('role.create'))
-                <a href="{{ route('role.create') }}" class="btn btn-primary"><i class="material-icons">add</i></a>
+                <h2>DATA PELANGGAN</h2>
+                @if(auth()->user()->hasPermission('pelanggan.create'))
+                <a href="{{ route('pelanggan.create') }}" class="btn btn-primary"><i class="material-icons">add</i></a>
                 @endif
             </div>
             <div class="body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-hover dataTable js-role-table">
+                    <table class="table table-bordered table-striped table-hover dataTable js-pelanggan-table">
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
-                                <th>Nama Role</th>
-                                <th>Slug</th>
+                                <th>Nama</th>
+                                <th>Alamat</th>
+                                <th>Telepon</th>
                                 <th width="15%">Aksi</th>
                             </tr>
                         </thead>
@@ -33,14 +34,15 @@
 @push('scripts')
 <script>
 $(function() {
-    $('.js-role-table').DataTable({
+    $('.js-pelanggan-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ route('role.data') }}',
+        ajax: '{{ route('pelanggan.data') }}',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'name', name: 'name' },
-            { data: 'slug', name: 'slug' },
+            { data: 'nama', name: 'nama' },
+            { data: 'alamat', name: 'alamat' },
+            { data: 'telpon', name: 'telpon' },
             { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
         ]
     });

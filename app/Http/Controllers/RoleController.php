@@ -11,6 +11,14 @@ use Illuminate\Support\Str;
 
 class RoleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:role.view')->only('index', 'data');
+        $this->middleware('permission:role.create')->only('create', 'store');
+        $this->middleware('permission:role.update')->only('edit', 'update');
+        $this->middleware('permission:role.delete')->only('destroy');
+    }
+
     public function index()
     {
         return view('role.index');
@@ -22,11 +30,17 @@ class RoleController extends Controller
         return DataTables::of($roles)
             ->addIndexColumn()
             ->addColumn('aksi', function ($role) {
-                return '<a href="' . route('role.edit', $role->id) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ' .
-                       '<form action="' . route('role.destroy', $role->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Hapus role ini?\')">' .
-                       csrf_field() .
-                       method_field('DELETE') .
-                       '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+                $buttons = '';
+                if (auth()->user()->hasPermission('role.update')) {
+                    $buttons .= '<a href="' . route('role.edit', $role->id) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ';
+                }
+                if (auth()->user()->hasPermission('role.delete')) {
+                    $buttons .= '<form action="' . route('role.destroy', $role->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Hapus role ini?\')">' .
+                               csrf_field() .
+                               method_field('DELETE') .
+                               '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+                }
+                return $buttons;
             })
             ->rawColumns(['aksi'])
             ->make(true);

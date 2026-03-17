@@ -110,83 +110,87 @@
                         </table>
                     </div>
 
-                    <div class="row clearfix" style="margin-top: 10px;">
-                        <div class="col-md-4 col-md-offset-8">
-                            <table class="table">
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Total</th>
-                                    <td>
-                                        <input type="number" name="total_bayar" id="total_bayar" value="{{ $total_bayar }}" class="form-control text-right" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Diskon</th>
-                                    <td>
-                                        <input type="number" name="diskon" id="diskon" class="form-control text-right" onkeyup="hitung()">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Potongan</th>
-                                    <td>
-                                        <input type="number" name="potongan" id="potongan" class="form-control text-right" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Sub Total</th>
-                                    <td>
-                                        <input type="number" name="s_total" id="s_total" class="form-control text-right" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Pajak</th>
-                                    <td>
-                                        <div class="row clearfix" style="margin: 0;">
-                                            <div class="col-xs-5" style="padding-left: 0;">
-                                                <input type="checkbox" id="pajak_aktif" name="pajak_aktif" value="1" class="filled-in chk-col-green" onchange="hitung()">
-                                                <label for="pajak_aktif" style="margin-bottom: 0;">Aktif</label>
-                                            </div>
-                                            <div class="col-xs-7" style="padding-right: 0;">
-                                                <div class="input-group">
-                                                    <input type="number" name="pajak_persen" id="pajak_persen" class="form-control text-right" value="0" min="0" max="100" onkeyup="hitung()">
-                                                    <span class="input-group-addon">%</span>
+                    <div class="row clearfix" style="margin-top: 20px;">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <!-- Kolom Kiri: Total, Diskon, Sub Total -->
+                                <div class="col-md-6">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th style="text-align: right; vertical-align: middle; width: 40%; background-color: #f9f9f9;">Total</th>
+                                            <td>
+                                                <input type="number" name="total_bayar" id="total_bayar" value="{{ $total_bayar }}" class="form-control text-right" readonly style="font-weight: bold;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align: right; vertical-align: middle; background-color: #f9f9f9;">Diskon (Rp)</th>
+                                            <td>
+                                                <input type="number" name="diskon" id="diskon" class="form-control text-right" onkeyup="hitung()" placeholder="0">
+                                                <input type="hidden" name="potongan" id="potongan">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align: right; vertical-align: middle; background-color: #f9f9f9;">Sub Total</th>
+                                            <td>
+                                                <input type="number" name="s_total" id="s_total" class="form-control text-right" readonly style="font-weight: bold;">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <!-- Kolom Kanan: Pajak, Bayar, Kembali -->
+                                <div class="col-md-6">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th style="text-align: right; vertical-align: middle; width: 40%; background-color: #f9f9f9;">Pajak</th>
+                                            <td>
+                                                <div class="row clearfix" style="margin: 0;">
+                                                    <div class="col-xs-4" style="padding-left: 0;">
+                                                        <input type="checkbox" id="pajak_aktif" name="pajak_aktif" value="1" class="filled-in chk-col-green" onchange="hitung()">
+                                                        <label for="pajak_aktif" style="margin-bottom: 0; margin-top: 8px;">Aktif</label>
+                                                    </div>
+                                                    <div class="col-xs-8" style="padding-right: 0;">
+                                                        <div class="input-group" style="margin-bottom: 5px;">
+                                                            <input type="number" name="pajak_persen" id="pajak_persen" class="form-control text-right" value="0" min="0" max="100" onkeyup="hitung()">
+                                                            <span class="input-group-addon">%</span>
+                                                        </div>
+                                                        <div class="input-group" style="margin-bottom: 0;">
+                                                            <span class="input-group-addon">Rp</span>
+                                                            <input type="text" name="pajak_nominal" id="pajak_nominal" class="form-control text-right" value="0" readonly style="background-color: #eee;">
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Nominal Pajak</th>
-                                    <td>
-                                        <input type="number" name="pajak_nominal" id="pajak_nominal" class="form-control text-right" value="0" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Total Akhir</th>
-                                    <td>
-                                        <input type="number" name="total_akhir" id="total_akhir" class="form-control text-right" value="0" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Bayar</th>
-                                    <td>
-                                        <input type="number" name="bayar" id="bayar" class="form-control text-right" onkeyup="hitung()" required>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: right; vertical-align: middle;">Kembali</th>
-                                    <td>
-                                        <input type="number" name="kembali" id="kembali" class="form-control text-right" readonly>
-                                    </td>
-                                </tr>
-                            </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align: right; vertical-align: middle; background-color: #f9f9f9; font-size: 16px; color: #e91e63;">Total Akhir</th>
+                                            <td>
+                                                <input type="number" name="total_akhir" id="total_akhir" class="form-control text-right" value="0" readonly style="font-weight: bold; font-size: 18px; color: #e91e63;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align: right; vertical-align: middle; background-color: #f9f9f9;">Bayar</th>
+                                            <td>
+                                                <input type="number" name="bayar" id="bayar" class="form-control text-right" onkeyup="hitung()" required style="font-weight: bold; font-size: 16px;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="text-align: right; vertical-align: middle; background-color: #f9f9f9;">Kembali</th>
+                                            <td>
+                                                <input type="number" name="kembali" id="kembali" class="form-control text-right" readonly style="font-weight: bold; font-size: 16px;">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row clearfix">
-                        <div class="col-md-4 col-md-offset-8 text-right">
-                            <button type="button" id="btn-finish" class="btn btn-info waves-effect" style="margin-right: 8px;">Selesaikan</button>
-                            <button type="button" id="btn-finish-print" class="btn btn-success waves-effect" style="margin-right: 8px;">Selesaikan & Cetak</button>
-                            <button type="button" id="btn-cancel" class="btn btn-danger waves-effect">Batalkan</button>
+                    <div class="row clearfix" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 20px;">
+                        <div class="col-md-12 text-right">
+                            <button type="button" id="btn-finish" class="btn btn-info btn-lg waves-effect" style="margin-right: 8px;"><i class="material-icons">save</i> Selesaikan</button>
+                            <button type="button" id="btn-finish-print" class="btn btn-success btn-lg waves-effect" style="margin-right: 8px;"><i class="material-icons">print</i> Selesaikan & Cetak</button>
+                            <button type="button" id="btn-cancel" class="btn btn-danger btn-lg waves-effect"><i class="material-icons">cancel</i> Batalkan</button>
                         </div>
                     </div>
                 </form>

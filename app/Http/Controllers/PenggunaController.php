@@ -10,6 +10,14 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PenggunaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:pengguna.view')->only('index', 'data');
+        $this->middleware('permission:pengguna.create')->only('create', 'store');
+        $this->middleware('permission:pengguna.update')->only('edit', 'update');
+        $this->middleware('permission:pengguna.delete')->only('destroy');
+    }
+
     public function index()
     {
         return view('pengguna.index');
@@ -25,17 +33,17 @@ class PenggunaController extends Controller
                 return $user->role ? $user->role->name : '-';
             })
             ->addColumn('aksi', function ($user) {
-                $editUrl = route('pengguna.edit', $user->id);
-                $destroyUrl = route('pengguna.destroy', $user->id);
-
-                $editButton = '<a href="' . $editUrl . '" class="btn btn-success"><i class="material-icons">edit</i></a>';
-
-                $deleteButton = '<form action="' . $destroyUrl . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Apakah Anda Yakin Akan Mengahapus Data ini???\')">' .
-                    csrf_field() .
-                    method_field('DELETE') .
-                    '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
-
-                return $editButton . ' ' . $deleteButton;
+                $buttons = '';
+                if (auth()->user()->hasPermission('pengguna.update')) {
+                    $buttons .= '<a href="' . route('pengguna.edit', $user->id) . '" class="btn btn-success"><i class="material-icons">edit</i></a>';
+                }
+                if (auth()->user()->hasPermission('pengguna.delete')) {
+                    $buttons .= ' <form action="' . route('pengguna.destroy', $user->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Apakah Anda Yakin Akan Mengahapus Data ini???\')">' .
+                                csrf_field() .
+                                method_field('DELETE') .
+                                '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+                }
+                return $buttons;
             })
             ->rawColumns(['aksi'])
             ->make(true);

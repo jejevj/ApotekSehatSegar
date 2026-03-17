@@ -40,8 +40,19 @@ Route::middleware('auth')->group(function () {
         Route::get('pelanggan/create', [PelangganController::class, 'create'])->name('pelanggan.create');
         Route::post('pelanggan', [PelangganController::class, 'store'])->name('pelanggan.store');
     });
-    Route::middleware('permission:pelanggan.view')->get('pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
-    // ... tambahkan resource pelanggan manual jika diperlukan ...
+    Route::middleware('permission:pelanggan.view')->group(function () {
+        Route::get('pelanggan/data', [PelangganController::class, 'data'])->name('pelanggan.data');
+        Route::get('pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+    });
+    Route::middleware('permission:pelanggan.update')->group(function () {
+        Route::get('pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
+        Route::put('pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
+    });
+    Route::middleware('permission:pelanggan.delete')->delete('pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
+
+    // Cetak Struk & Laporan
+    Route::middleware('permission:laporan.view')->get('penjualan/cetak-struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.cetakStruk');
+    Route::middleware('permission:laporan.print')->post('/laporan/cetak', [PenjualanController::class, 'cetak'])->name('laporan.cetak');
 
     // Penjualan
     Route::middleware('permission:penjualan.create')->group(function () {
@@ -59,10 +70,6 @@ Route::middleware('auth')->group(function () {
         Route::get('penjualan/{penjualan}', [PenjualanController::class, 'show'])->name('penjualan.show');
     });
     Route::middleware('permission:penjualan.delete')->delete('penjualan/{penjualan}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
-    
-    // Cetak Struk & Laporan
-    Route::middleware('permission:laporan.view')->get('penjualan/cetak-struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.cetakStruk');
-    Route::middleware('permission:laporan.print')->post('/laporan/cetak', [PenjualanController::class, 'cetak'])->name('laporan.cetak');
 
     // Pengguna (Admin Only)
     Route::middleware('permission:pengguna.create')->group(function () {

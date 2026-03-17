@@ -12,6 +12,15 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PenjualanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:penjualan.view')->only('index', 'data', 'show');
+        $this->middleware('permission:penjualan.create')->only('create', 'addItem', 'addFromModal', 'updateItem', 'removeItem', 'storeDetail', 'cancel');
+        $this->middleware('permission:penjualan.delete')->only('destroy');
+        $this->middleware('permission:laporan.view')->only('cetakStruk');
+        $this->middleware('permission:laporan.print')->only('cetak');
+    }
+
     public function index()
     {
         return view('penjualan.index');
@@ -38,18 +47,21 @@ class PenjualanController extends Controller
                 return 'Rp. ' . number_format($row->total_harga, 0, ',', '.');
             })
             ->addColumn('aksi', function ($row) {
-                $showUrl = route('penjualan.show', $row->kode_penjualan);
-                $printUrl = route('penjualan.cetakStruk', ['kode_pjl' => $row->kode_penjualan]);
-                $destroyUrl = route('penjualan.destroy', $row->kode_penjualan);
-
-                $viewButton = '<a href="' . $showUrl . '" class="btn btn-xs btn-info"><i class="material-icons">visibility</i></a>';
-                $printButton = '<a href="' . $printUrl . '" target="_blank" class="btn btn-xs btn-success"><i class="material-icons">print</i></a>';
-                $deleteButton = '<form action="' . $destroyUrl . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus nota ini?\')">'
+                $buttons = '';
+                if (auth()->user()->hasPermission('penjualan.view')) {
+                    $buttons .= '<a href="' . route('penjualan.show', $row->kode_penjualan) . '" class="btn btn-xs btn-info"><i class="material-icons">visibility</i></a>';
+                }
+                if (auth()->user()->hasPermission('laporan.view')) {
+                    $buttons .= ' <a href="' . route('penjualan.cetakStruk', ['kode_pjl' => $row->kode_penjualan]) . '" target="_blank" class="btn btn-xs btn-success"><i class="material-icons">print</i></a>';
+                }
+                if (auth()->user()->hasPermission('penjualan.delete')) {
+                    $buttons .= ' <form action="' . route('penjualan.destroy', $row->kode_penjualan) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus nota ini?\')">'
                                 . csrf_field()
                                 . method_field('DELETE')
                                 . '<button type="submit" class="btn btn-xs btn-danger"><i class="material-icons">delete</i></button>'
                                 . '</form>';
-                return $viewButton . ' ' . $printButton . ' ' . $deleteButton;
+                }
+                return $buttons;
             })
             ->rawColumns(['aksi'])
             ->make(true);

@@ -11,6 +11,14 @@ use Yajra\DataTables\Facades\DataTables;
 
 class MenuController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:menu.view')->only('index', 'data');
+        $this->middleware('permission:menu.create')->only('create', 'store');
+        $this->middleware('permission:menu.update')->only('edit', 'update');
+        $this->middleware('permission:menu.delete')->only('destroy');
+    }
+
     public function index()
     {
         return view('menu.index');
@@ -25,11 +33,17 @@ class MenuController extends Controller
                 return $menu->parent ? $menu->parent->name : '-';
             })
             ->addColumn('aksi', function ($menu) {
-                return '<a href="' . route('menu.edit', $menu->id) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ' .
-                       '<form action="' . route('menu.destroy', $menu->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Hapus menu ini?\')">' .
-                       csrf_field() .
-                       method_field('DELETE') .
-                       '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+                $buttons = '';
+                if (auth()->user()->hasPermission('menu.update')) {
+                    $buttons .= '<a href="' . route('menu.edit', $menu->id) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ';
+                }
+                if (auth()->user()->hasPermission('menu.delete')) {
+                    $buttons .= '<form action="' . route('menu.destroy', $menu->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Hapus menu ini?\')">' .
+                               csrf_field() .
+                               method_field('DELETE') .
+                               '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+                }
+                return $buttons;
             })
             ->rawColumns(['aksi'])
             ->make(true);

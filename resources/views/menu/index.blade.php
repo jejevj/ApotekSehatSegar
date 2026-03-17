@@ -6,7 +6,9 @@
         <div class="card" style="border-radius: 10px;">
             <div class="header">
                 <h2>DATA MENU</h2>
+                @if(auth()->user()->hasPermission('menu.create'))
                 <a href="{{ route('menu.create') }}" class="btn btn-primary"><i class="material-icons">add</i></a>
+                @endif
             </div>
             <div class="body">
                 <div class="table-responsive">
