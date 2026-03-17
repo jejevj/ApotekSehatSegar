@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Support\Facades\View;
+use App\Models\Setting;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -30,5 +33,10 @@ class AppServiceProvider extends ServiceProvider
                 );
             });
         }
+
+        // Share settings to all views
+        View::composer('*', function ($view) {
+            $view->with('setting', Setting::first());
+        });
     }
 }

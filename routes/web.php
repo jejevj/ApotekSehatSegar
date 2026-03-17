@@ -7,6 +7,7 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -17,6 +18,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
+
+    // Setting Aplikasi
+    Route::middleware('permission:setting.view')->group(function () {
+        Route::get('setting', [SettingController::class, 'index'])->name('setting.index');
+        Route::put('setting', [SettingController::class, 'update'])->name('setting.update');
+    });
 
     // Barang
     Route::middleware('permission:barang.create')->group(function () {

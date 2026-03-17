@@ -58,11 +58,18 @@ class MenuSeeder extends Seeder
                 'order' => 6,
             ],
             [
+                'name' => 'Setting Aplikasi',
+                'icon' => 'settings',
+                'route_name' => 'setting.index',
+                'permission_slug' => 'setting.view',
+                'order' => 7,
+            ],
+            [
                 'name' => 'Laporan Penjualan',
                 'icon' => 'book',
                 'target' => '#smallModal',
                 'permission_slug' => 'laporan.view',
-                'order' => 7,
+                'order' => 8,
             ],
         ];
 

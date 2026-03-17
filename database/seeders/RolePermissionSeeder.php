@@ -18,8 +18,8 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // 1. Create Roles
-        $adminRole = Role::updateOrCreate(['slug' => 'admin'], ['name' => 'Administrator']);
-        $kasirRole = Role::updateOrCreate(['slug' => 'kasir'], ['name' => 'Kasir']);
+        $adminRole = Role::updateOrCreate(['name' => 'Administrator'], ['slug' => 'admin']);
+        $kasirRole = Role::updateOrCreate(['name' => 'Kasir'], ['slug' => 'kasir']);
 
         // 2. Define Features and Actions
         $features = [
@@ -29,6 +29,7 @@ class RolePermissionSeeder extends Seeder
             'pengguna' => ['view', 'create', 'update', 'delete'],
             'role' => ['view', 'create', 'update', 'delete'],
             'menu' => ['view', 'create', 'update', 'delete'],
+            'setting' => ['view', 'update'],
             'laporan' => ['view', 'print'],
         ];
 

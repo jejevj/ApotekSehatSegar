@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Apotek Sehat Segar | Point of Sale</title>
+    <title>{{ $setting->nama_aplikasi ?? 'Apotek App' }} | Point of Sale</title>
     <!-- Favicon-->
-    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ $setting->favicon ? asset('images/' . $setting->favicon) : asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
@@ -69,7 +69,7 @@
             <div class="navbar-header">
                 <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
                 <a href="javascript:void(0);" class="bars"></a>
-                <a class="navbar-brand" href="{{ url('/') }}">Apotek Sehat Segar</a>
+                <a class="navbar-brand" href="{{ url('/') }}">{{ $setting->nama_aplikasi ?? 'Apotek App' }}</a>
             </div>
         </div>
     </nav>
@@ -151,7 +151,7 @@
             <!-- Footer -->
             <div class="legal">
                 <div class="copyright">
-                    &copy; 2022 <a href="javascript:void(0);">J. ANGGA WIJAYA</a>.
+                    {!! $setting->footer_text ?? '&copy; 2026 <a href="javascript:void(0);">Apotek App</a>.' !!}
                 </div>
                 <div class="version">
                     <b>Version: </b> 1.1.0
