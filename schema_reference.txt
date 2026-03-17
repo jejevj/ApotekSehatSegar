@@ -1,0 +1,53 @@
+Table: tb_barang
+- kode_barcode
+- nama_barang
+- satuan
+- harga_beli
+- stok
+- harga_jual
+- profit
+
+Table: tb_nota
+- perusahaan
+- tgl_faktur
+- tempo
+- nominal
+- tgl_bayar
+- keterangan
+- kode
+- foto
+
+Table: tb_pelanggan
+- kode_pelanggan
+- nama
+- alamat
+- telpon
+- email
+
+Table: tb_pengguna
+- id
+- username
+- nama
+- password
+- level
+- foto
+
+Table: tb_penjualan
+- id
+- kode_penjualan
+- kode_barcode
+- jumlah
+- total
+- tgl_penjualan
+- id_pelanggan
+- id_user
+
+Table: tb_penjualan_detail
+- id
+- kode_penjualan
+- bayar
+- kembali
+- diskon
+- potongan
+- total
+

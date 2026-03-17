@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Barang;
+use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
+
+class BarangController extends Controller
+{
+    public function index()
+    {
+        return view('barang.index');
+    }
+
+    public function data()
+    {
+        $barangs = Barang::query();
+        return DataTables::of($barangs)
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($barang) {
+                if (empty($barang->kode_barcode)) {
+                    return ''; // Atau tombol non-aktif
+                }
+                return '<a href="' . route('barang.edit', $barang->kode_barcode) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ' .
+                       '<form action="' . route('barang.destroy', $barang->kode_barcode) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Apakah Anda Yakin Akan Mengahapus Data ini???\')">' .
+                       csrf_field() .
+                       method_field('DELETE') .
+                       '<button type="submit" class="btn btn-danger"><i class="material-icons">delete</i></button></form>';
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+    public function create()
+    {
+        return view('barang.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'kode_barcode' => 'required|unique:tb_barang',
+            'nama_barang' => 'required',
+            'satuan' => 'required',
+            'harga_beli' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'harga_jual' => 'required|numeric',
+        ]);
+
+        $profit = $request->harga_jual - $request->harga_beli;
+
+        Barang::create(array_merge($request->all(), ['profit' => $profit]));
+
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan');
+    }
+
+    public function show($id)
+    {
+        //
+    }
+
+    public function edit($id)
+    {
+        $barang = Barang::findOrFail($id);
+        return view('barang.edit', compact('barang'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $barang = Barang::findOrFail($id);
+
+        $request->validate([
+            'nama_barang' => 'required',
+            'satuan' => 'required',
+            'harga_beli' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'harga_jual' => 'required|numeric',
+        ]);
+
+        $profit = $request->harga_jual - $request->harga_beli;
+
+        $barang->update(array_merge($request->all(), ['profit' => $profit]));
+
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil diupdate');
+    }
+
+    public function destroy($id)
+    {
+        $barang = Barang::findOrFail($id);
+        $barang->delete();
+
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
+    }
+}
