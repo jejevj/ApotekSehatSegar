@@ -105,38 +105,45 @@
             <div class="menu">
                 <ul class="list">
                     <li class="header">Menu Utama</li>
-                    <li class="{{ request()->is('/') ? 'active' : '' }}">
-                        <a href="{{ url('/') }}">
-                            <i class="material-icons">home</i>
-                            <span>Beranda</span>
-                        </a>
-                    </li>
-                    <li class="{{ request()->is('barang*') ? 'active' : '' }}">
-                        <a href="{{ route('barang.index') }}">
-                            <i class="material-icons">view_module</i>
-                            <span>Barang</span>
-                        </a>
-                    </li>
-                    <li class="{{ request()->is('penjualan*') ? 'active' : '' }}">
-                        <a href="{{ route('penjualan.index') }}">
-                            <i class="material-icons">add_shopping_cart</i>
-                            <span>Penjualan</span>
-                        </a>
-                    </li>
-                    
-                    @if(auth()->user()->level == 'admin')
-                    <li class="{{ request()->is('pengguna*') ? 'active' : '' }}">
-                        <a href="{{ route('pengguna.index') }}">
-                            <i class="material-icons">person</i>
-                            <span>Pengguna</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a data-toggle="modal" data-target="#smallModal">
-                            <i class="material-icons">book</i>
-                            <span>Laporan Penjualan</span>
-                        </a>
-                    </li>
+                    @if(auth()->user()->role)
+                        @foreach(auth()->user()->role->menus as $menu)
+                            @php
+                                // Cek apakah user memiliki permission untuk menu ini
+                                if ($menu->permission_slug && !auth()->user()->hasPermission($menu->permission_slug)) {
+                                    continue;
+                                }
+
+                                $isActive = false;
+                                if ($menu->route_name) {
+                                    $isActive = request()->routeIs($menu->route_name . '*');
+                                } elseif ($menu->url) {
+                                    $isActive = request()->is(trim($menu->url, '/') . '*');
+                                }
+                                
+                                $href = 'javascript:void(0);';
+                                if ($menu->route_name) {
+                                    $href = route($menu->route_name);
+                                } elseif ($menu->url) {
+                                    $href = url($menu->url);
+                                }
+                            @endphp
+                            <li class="{{ $isActive ? 'active' : '' }}">
+                                <a href="{{ $href }}" @if($menu->target) data-toggle="modal" data-target="{{ $menu->target }}" @endif>
+                                    @if($menu->icon)
+                                        <i class="material-icons">{{ $menu->icon }}</i>
+                                    @endif
+                                    <span>{{ $menu->name }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    @else
+                        {{-- Fallback jika role belum diset --}}
+                        <li class="{{ request()->is('/') ? 'active' : '' }}">
+                            <a href="{{ url('/') }}">
+                                <i class="material-icons">home</i>
+                                <span>Beranda</span>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

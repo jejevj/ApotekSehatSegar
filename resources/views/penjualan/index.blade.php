@@ -6,7 +6,7 @@
         <div class="card" style="border-radius: 10px;">
             <div class="header">
                 <h2>DATA PENJUALAN</h2>
-                <a href="{{-- route('penjualan.create') --}}" class="btn btn-primary"><i class="material-icons">add</i></a>
+                <a href="{{ route('penjualan.create') }}" class="btn btn-primary"><i class="material-icons">add</i> Tambah Transaksi</a>
             </div>
             <div class="body">
                 <div class="table-responsive">

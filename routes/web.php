@@ -5,6 +5,8 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -16,12 +18,76 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
 
-    Route::get('barang/data', [BarangController::class, 'data'])->name('barang.data');
-    Route::resource('barang', BarangController::class);
-    Route::resource('pelanggan', PelangganController::class);
-    Route::get('penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
-    Route::resource('penjualan', PenjualanController::class);
-    Route::resource('pengguna', PenggunaController::class);
+    // Barang
+    Route::middleware('permission:barang.create')->group(function () {
+        Route::get('barang/create', [BarangController::class, 'create'])->name('barang.create');
+        Route::post('barang', [BarangController::class, 'store'])->name('barang.store');
+    });
+    Route::middleware('permission:barang.view')->group(function () {
+        Route::get('barang/data', [BarangController::class, 'data'])->name('barang.data');
+        Route::get('barang/products-data', [BarangController::class, 'productsData'])->name('barang.productsData');
+        Route::get('barang', [BarangController::class, 'index'])->name('barang.index');
+        Route::get('barang/{barang}', [BarangController::class, 'show'])->name('barang.show');
+    });
+    Route::middleware('permission:barang.update')->group(function () {
+        Route::get('barang/{barang}/edit', [BarangController::class, 'edit'])->name('barang.edit');
+        Route::put('barang/{barang}', [BarangController::class, 'update'])->name('barang.update');
+    });
+    Route::middleware('permission:barang.delete')->delete('barang/{barang}', [BarangController::class, 'destroy'])->name('barang.destroy');
+
+    // Pelanggan
+    Route::middleware('permission:pelanggan.create')->group(function () {
+        Route::get('pelanggan/create', [PelangganController::class, 'create'])->name('pelanggan.create');
+        Route::post('pelanggan', [PelangganController::class, 'store'])->name('pelanggan.store');
+    });
+    Route::middleware('permission:pelanggan.view')->get('pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+    // ... tambahkan resource pelanggan manual jika diperlukan ...
+
+    // Penjualan
+    Route::middleware('permission:penjualan.create')->group(function () {
+        Route::get('penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
+        Route::post('penjualan/add-item', [PenjualanController::class, 'addItem'])->name('penjualan.addItem');
+        Route::post('penjualan/add-from-modal', [PenjualanController::class, 'addFromModal'])->name('penjualan.addFromModal');
+        Route::post('penjualan/update-item', [PenjualanController::class, 'updateItem'])->name('penjualan.updateItem');
+        Route::post('penjualan/cancel', [PenjualanController::class, 'cancel'])->name('penjualan.cancel');
+        Route::delete('penjualan/remove-item/{id}', [PenjualanController::class, 'removeItem'])->name('penjualan.removeItem');
+        Route::post('penjualan/store-detail', [PenjualanController::class, 'storeDetail'])->name('penjualan.storeDetail');
+    });
+    Route::middleware('permission:penjualan.view')->group(function () {
+        Route::get('penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
+        Route::get('penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+        Route::get('penjualan/{penjualan}', [PenjualanController::class, 'show'])->name('penjualan.show');
+    });
+    Route::middleware('permission:penjualan.delete')->delete('penjualan/{penjualan}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
     
-    Route::post('/laporan/cetak', [PenjualanController::class, 'cetak'])->name('laporan.cetak');
+    // Cetak Struk & Laporan
+    Route::middleware('permission:laporan.view')->get('penjualan/cetak-struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.cetakStruk');
+    Route::middleware('permission:laporan.print')->post('/laporan/cetak', [PenjualanController::class, 'cetak'])->name('laporan.cetak');
+
+    // Pengguna (Admin Only)
+    Route::middleware('permission:pengguna.create')->group(function () {
+        Route::get('pengguna/create', [PenggunaController::class, 'create'])->name('pengguna.create');
+        Route::post('pengguna', [PenggunaController::class, 'store'])->name('pengguna.store');
+    });
+    Route::middleware('permission:pengguna.view')->group(function () {
+        Route::get('pengguna/data', [PenggunaController::class, 'data'])->name('pengguna.data');
+        Route::get('pengguna', [PenggunaController::class, 'index'])->name('pengguna.index');
+    });
+    Route::middleware('permission:pengguna.update')->group(function () {
+        Route::get('pengguna/{pengguna}/edit', [PenggunaController::class, 'edit'])->name('pengguna.edit');
+        Route::put('pengguna/{pengguna}', [PenggunaController::class, 'update'])->name('pengguna.update');
+    });
+    Route::middleware('permission:pengguna.delete')->delete('pengguna/{pengguna}', [PenggunaController::class, 'destroy'])->name('pengguna.destroy');
+
+    // Role Management
+    Route::middleware('permission:pengguna.view')->group(function () {
+        Route::get('role/data', [RoleController::class, 'data'])->name('role.data');
+        Route::resource('role', RoleController::class);
+    });
+
+    // Menu Management
+    Route::middleware('permission:pengguna.view')->group(function () {
+        Route::get('menu/data', [MenuController::class, 'data'])->name('menu.data');
+        Route::resource('menu', MenuController::class);
+    });
 });

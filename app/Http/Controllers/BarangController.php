@@ -92,4 +92,23 @@ class BarangController extends Controller
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
     }
+
+    public function productsData()
+    {
+        $barangs = Barang::query();
+        return DataTables::of($barangs)
+            ->addIndexColumn()
+            ->addColumn('harga_jual_formatted', function ($barang) {
+                return 'Rp. ' . number_format($barang->harga_jual, 0, ',', '.');
+            })
+            ->addColumn('action', function ($barang) {
+                $cleanBarcode = htmlspecialchars($barang->kode_barcode, ENT_QUOTES, 'UTF-8');
+                return '<div class="input-group">' .
+                       '<input type="number" class="form-control" value="1" min="1" max="' . $barang->stok . '" id="jumlah-' . $cleanBarcode . '">' .
+                       '<span class="input-group-btn"><button type="button" class="btn btn-primary btn-xs select-product-from-modal" data-barcode="' . $cleanBarcode . '">Pilih</button></span>' .
+                       '</div>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
 }
