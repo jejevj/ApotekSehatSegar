@@ -17,8 +17,8 @@ class PenjualanController extends Controller
     public function data()
     {
         $penjualan = DB::table('tb_penjualan as p')
-            ->leftJoin('users as u', 'p.id_user', '=', 'u.id')
-            ->leftJoin('tb_pelanggan as pl', 'p.id_pelanggan', '=', 'pl.kode_pelanggan')
+            ->join('users as u', 'p.id_user', '=', 'u.id')
+            ->join('tb_pelanggan as pl', 'p.id_pelanggan', '=', 'pl.kode_pelanggan')
             ->select(
                 'p.kode_penjualan',
                 'p.tgl_penjualan as tanggal',
