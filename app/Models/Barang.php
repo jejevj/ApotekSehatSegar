@@ -16,7 +16,6 @@ class Barang extends Model
         'kode_barcode',
         'nama_barang',
         'unit_id',
-        'lokasi_id',
         'rak_id',
         'isi',
         'satuan',
@@ -31,17 +30,11 @@ class Barang extends Model
         return $this->belongsTo(Unit::class, 'unit_id');
     }
 
-    public function lokasi()
-    {
-        return $this->belongsTo(Lokasi::class, 'lokasi_id')->withDefault([
-            'nama_lokasi' => 'Belum Terorganisir'
-        ]);
-    }
-
     public function rak()
     {
         return $this->belongsTo(Rak::class, 'rak_id')->withDefault([
-            'nama_rak' => 'Belum Terorganisir'
+            'nama_lokasi' => 'Belum',
+            'nama_rak' => 'Terorganisir'
         ]);
     }
 }

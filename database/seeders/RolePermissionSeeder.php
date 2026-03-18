@@ -27,7 +27,6 @@ class RolePermissionSeeder extends Seeder
         $features = [
             'barang' => ['view', 'create', 'update', 'delete'],
             'unit' => ['view', 'create', 'update', 'delete'],
-            'lokasi' => ['view', 'create', 'update', 'delete'],
             'rak' => ['view', 'create', 'update', 'delete'],
             'opname' => ['view', 'create', 'update', 'delete', 'approve'],
             'pelanggan' => ['view', 'create', 'update', 'delete'],

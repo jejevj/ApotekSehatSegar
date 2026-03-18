@@ -19,8 +19,7 @@
                                 <th>Barcode</th>
                                 <th>Nama Barang</th>
                                 <th>Satuan</th>
-                                <th>Lokasi</th>
-                                <th>Rak</th>
+                                <th>Lokasi & Rak</th>
                                 <th>Harga Beli</th>
                                 <th>Stok</th>
                                 <th>Harga Jual</th>
@@ -50,8 +49,7 @@ $(function() {
             { data: 'kode_barcode', name: 'kode_barcode' },
             { data: 'nama_barang', name: 'nama_barang' },
             { data: 'satuan', name: 'satuan' },
-            { data: 'nama_lokasi', name: 'nama_lokasi', searchable: false },
-            { data: 'nama_rak', name: 'nama_rak', searchable: false },
+            { data: 'nama_lokasi_rak', name: 'nama_lokasi_rak', searchable: false },
             { data: 'harga_beli', name: 'harga_beli' },
             { data: 'stok', name: 'stok' },
             { data: 'harga_jual', name: 'harga_jual' },

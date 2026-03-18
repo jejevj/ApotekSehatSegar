@@ -5,12 +5,19 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card" style="border-radius: 10px;">
             <div class="header">
-                <h2>EDIT RAK BARANG</h2>
+                <h2>EDIT LOKASI & RAK BARANG</h2>
             </div>
             <div class="body">
                 <form action="{{ route('rak.update', $rak->id) }}" method="POST">
                     @csrf
                     @method('PUT')
+
+                    <label for="nama_lokasi">Nama Lokasi</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            <input type="text" name="nama_lokasi" class="form-control" value="{{ $rak->nama_lokasi }}" required />
+                        </div>
+                    </div>
 
                     <label for="nama_rak">Nama Rak</label>
                     <div class="form-group">

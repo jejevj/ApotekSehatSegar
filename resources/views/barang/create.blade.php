@@ -39,39 +39,26 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="isi">Isi (Opsional)</label>
+                            <label for="rak_id">Lokasi & Rak</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <input type="number" name="isi" id="isi" class="form-control" value="1" min="1" />
+                                    <select name="rak_id" id="rak_id" class="form-control show-tick" data-container="body">
+                                        <option value="">-- Belum Terorganisir --</option>
+                                        @foreach($raks as $rak)
+                                            <option value="{{ $rak->id }}">{{ $rak->nama_lokasi }} - {{ $rak->nama_rak }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
-                            <label for="lokasi_id">Lokasi</label>
+                        <div class="col-md-12">
+                            <label for="isi">Isi (Opsional)</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <select name="lokasi_id" id="lokasi_id" class="form-control show-tick" data-container="body">
-                                        <option value="">-- Belum Terorganisir --</option>
-                                        @foreach($lokasis as $lokasi)
-                                            <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="rak_id">Rak</label>
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <select name="rak_id" id="rak_id" class="form-control show-tick" data-container="body">
-                                        <option value="">-- Belum Terorganisir --</option>
-                                        @foreach($raks as $rak)
-                                            <option value="{{ $rak->id }}">{{ $rak->nama_rak }}</option>
-                                        @endforeach
-                                    </select>
+                                    <input type="number" name="isi" id="isi" class="form-control" value="1" min="1" />
                                 </div>
                             </div>
                         </div>

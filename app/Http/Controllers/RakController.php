@@ -51,14 +51,16 @@ class RakController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_rak' => 'required|unique:tb_rak,nama_rak',
+            'nama_lokasi' => 'required',
+            'nama_rak' => 'required',
         ]);
 
         Rak::create([
+            'nama_lokasi' => $request->nama_lokasi,
             'nama_rak' => $request->nama_rak,
         ]);
 
-        return redirect()->route('rak.index')->with('success', 'Rak berhasil ditambahkan');
+        return redirect()->route('rak.index')->with('success', 'Lokasi & Rak berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -72,20 +74,22 @@ class RakController extends Controller
         $rak = Rak::findOrFail($id);
 
         $request->validate([
-            'nama_rak' => 'required|unique:tb_rak,nama_rak,' . $rak->id,
+            'nama_lokasi' => 'required',
+            'nama_rak' => 'required',
         ]);
 
         $rak->update([
+            'nama_lokasi' => $request->nama_lokasi,
             'nama_rak' => $request->nama_rak,
         ]);
 
-        return redirect()->route('rak.index')->with('success', 'Rak berhasil diupdate');
+        return redirect()->route('rak.index')->with('success', 'Lokasi & Rak berhasil diupdate');
     }
 
     public function destroy($id)
     {
         $rak = Rak::findOrFail($id);
         $rak->delete();
-        return redirect()->route('rak.index')->with('success', 'Rak berhasil dihapus');
+        return redirect()->route('rak.index')->with('success', 'Lokasi & Rak berhasil dihapus');
     }
 }
