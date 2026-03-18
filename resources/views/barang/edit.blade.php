@@ -30,7 +30,7 @@
                             <label for="unit_id">Satuan</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <select name="unit_id" id="unit_id" class="form-control show-tick" required>
+                                    <select name="unit_id" id="unit_id" class="form-control show-tick" data-container="body" required>
                                         <option value="">-- Pilih Satuan --</option>
                                         @foreach($units as $unit)
                                             <option value="{{ $unit->id }}" {{ (int) $selectedUnitId === (int) $unit->id ? 'selected' : '' }}>{{ $unit->nama }}</option>

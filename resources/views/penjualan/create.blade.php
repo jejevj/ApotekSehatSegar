@@ -42,7 +42,7 @@
                     <div class="row clearfix">
                         <div class="col-md-3">
                             <label>Pelanggan</label>
-                            <select name="id_pelanggan" class="form-control show-tick" style="border-radius: 5px;">
+                            <select name="id_pelanggan" class="form-control show-tick" data-container="body" style="border-radius: 5px;">
                                 @foreach($pelanggan as $p)
                                     <option value="{{ $p->kode_pelanggan }}" {{ $p->kode_pelanggan == 3 ? 'selected' : '' }}>
                                         {{ $p->nama }}

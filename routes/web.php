@@ -10,6 +10,9 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\BillingSettingController;
+use App\Http\Controllers\StockOpnameController;
+use App\Http\Controllers\DistributorController;
+use App\Http\Controllers\PembelianController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -20,6 +23,9 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'billing.guard'])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
+    Route::get('/summary-data', [HomeController::class, 'summaryData'])->name('summary.data');
+    Route::get('/chart-data', [HomeController::class, 'chartData'])->name('chart.data');
+    Route::get('/transaction-data', [HomeController::class, 'transactionData'])->name('transaction.data');
 
     // Setting Aplikasi
     Route::middleware('permission:setting.view')->group(function () {
@@ -58,6 +64,60 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
         Route::put('barang/{barang}', [BarangController::class, 'update'])->name('barang.update');
     });
     Route::middleware('permission:barang.delete')->delete('barang/{barang}', [BarangController::class, 'destroy'])->name('barang.destroy');
+
+    // Distributor
+    Route::middleware('permission:distributor.create')->group(function () {
+        Route::get('distributor/create', [DistributorController::class, 'create'])->name('distributor.create');
+        Route::post('distributor', [DistributorController::class, 'store'])->name('distributor.store');
+    });
+    Route::middleware('permission:distributor.view')->group(function () {
+        Route::get('distributor/data', [DistributorController::class, 'data'])->name('distributor.data');
+        Route::get('distributor', [DistributorController::class, 'index'])->name('distributor.index');
+    });
+    Route::middleware('permission:distributor.update')->group(function () {
+        Route::get('distributor/{distributor}/edit', [DistributorController::class, 'edit'])->name('distributor.edit');
+        Route::put('distributor/{distributor}', [DistributorController::class, 'update'])->name('distributor.update');
+    });
+    Route::middleware('permission:distributor.delete')->delete('distributor/{distributor}', [DistributorController::class, 'destroy'])->name('distributor.destroy');
+
+    // Pembelian (Barang Masuk)
+    Route::middleware('permission:pembelian.create')->group(function () {
+        Route::get('pembelian/create', [PembelianController::class, 'create'])->name('pembelian.create');
+        Route::post('pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
+    });
+    Route::middleware('permission:pembelian.view')->group(function () {
+        Route::get('pembelian/data', [PembelianController::class, 'data'])->name('pembelian.data');
+        Route::get('pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
+        Route::get('pembelian/{pembelian}', [PembelianController::class, 'show'])->name('pembelian.show');
+    });
+    Route::middleware('permission:pembelian.update')->post('pembelian/{pembelian}/bayar', [PembelianController::class, 'bayar'])->name('pembelian.bayar');
+    Route::middleware('permission:pembelian.delete')->delete('pembelian/{pembelian}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
+
+    // Opname Stok
+    Route::middleware('permission:opname.create')->group(function () {
+        Route::get('opname/create', [StockOpnameController::class, 'create'])->name('opname.create');
+        Route::post('opname', [StockOpnameController::class, 'store'])->name('opname.store');
+        Route::post('opname/{opname}/add-item', [StockOpnameController::class, 'addItem'])->name('opname.addItem');
+    });
+    Route::middleware('permission:opname.view')->group(function () {
+        Route::get('opname/data', [StockOpnameController::class, 'data'])->name('opname.data');
+        Route::get('opname', [StockOpnameController::class, 'index'])->name('opname.index');
+        Route::get('opname/{opname}', [StockOpnameController::class, 'show'])->name('opname.show');
+        Route::get('opname/{opname}/items', [StockOpnameController::class, 'dataItems'])->name('opname.dataItems');
+    });
+    Route::middleware('permission:opname.update')->group(function () {
+        Route::get('opname/{opname}/edit', [StockOpnameController::class, 'edit'])->name('opname.edit');
+        Route::put('opname/{opname}', [StockOpnameController::class, 'update'])->name('opname.update');
+        Route::put('opname/{opname}/item/{item}', [StockOpnameController::class, 'updateItem'])->name('opname.updateItem');
+        Route::delete('opname/{opname}/item/{item}', [StockOpnameController::class, 'removeItem'])->name('opname.removeItem');
+        Route::post('opname/{opname}/finish', [StockOpnameController::class, 'finish'])->name('opname.finish');
+        Route::post('opname/{opname}/cancel', [StockOpnameController::class, 'cancel'])->name('opname.cancel');
+    });
+    Route::middleware('permission:opname.approve')->group(function () {
+        Route::post('opname/{opname}/approve', [StockOpnameController::class, 'approve'])->name('opname.approve');
+        Route::post('opname/{opname}/reject', [StockOpnameController::class, 'reject'])->name('opname.reject');
+    });
+    Route::middleware('permission:opname.delete')->delete('opname/{opname}', [StockOpnameController::class, 'destroy'])->name('opname.destroy');
 
     // Pelanggan
     Route::middleware('permission:pelanggan.create')->group(function () {

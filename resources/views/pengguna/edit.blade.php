@@ -43,7 +43,7 @@
                             <label for="level">Level (Legacy)</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <select name="level" class="form-control show-tick" required>
+                                    <select name="level" class="form-control show-tick" data-container="body" required>
                                         <option value="admin" {{ $user->level == 'admin' ? 'selected' : '' }}>Admin</option>
                                         <option value="kasir" {{ $user->level == 'kasir' ? 'selected' : '' }}>Kasir</option>
                                         <option value="billing" {{ $user->level == 'billing' ? 'selected' : '' }}>Billing</option>
@@ -58,7 +58,7 @@
                             <label for="role_id">Role Akses</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <select name="role_id" class="form-control show-tick" required>
+                                    <select name="role_id" class="form-control show-tick" data-container="body" required>
                                         <option value="">-- Pilih Role --</option>
                                         @foreach($roles as $role)
                                         <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>

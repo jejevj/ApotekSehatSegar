@@ -42,7 +42,7 @@
                             <label for="level">Level (Legacy)</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <select name="level" class="form-control show-tick" required>
+                                    <select name="level" class="form-control show-tick" data-container="body" required>
                                         <option value="admin">Admin</option>
                                         <option value="kasir">Kasir</option>
                                         <option value="billing">Billing</option>
@@ -57,7 +57,7 @@
                             <label for="role_id">Role Akses</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <select name="role_id" class="form-control show-tick" required>
+                                    <select name="role_id" class="form-control show-tick" data-container="body" required>
                                         <option value="">-- Pilih Role --</option>
                                         @foreach($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>

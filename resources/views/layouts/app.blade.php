@@ -38,6 +38,11 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             border-radius: 5px;
         }
+
+        .bootstrap-select.btn-group.bs-container,
+        .bootstrap-select .dropdown-menu {
+            z-index: 10000;
+        }
     </style>
 </head>
 
