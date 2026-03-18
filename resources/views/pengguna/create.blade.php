@@ -45,6 +45,7 @@
                                     <select name="level" class="form-control show-tick" required>
                                         <option value="admin">Admin</option>
                                         <option value="kasir">Kasir</option>
+                                        <option value="billing">Billing</option>
                                     </select>
                                 </div>
                             </div>

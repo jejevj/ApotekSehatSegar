@@ -24,16 +24,27 @@
                         </div>
                     </div>
 
-                    <label for="satuan">Satuan</label>
-                    <div class="form-group">
-                        <div class="form-line">
-                            <select name="satuan" class="form-control show-tick">
-                                <option value="">-- Pilih Satuan --</option>
-                                <option value="BOTOL">BOTOL</option>
-                                <option value="STRIP">STRIP</option>
-                                <option value="PCS">PCS</option>
-                                <option value="BOX">BOX</option>
-                            </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="unit_id">Satuan</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select name="unit_id" id="unit_id" class="form-control show-tick" required>
+                                        <option value="">-- Pilih Satuan --</option>
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}">{{ $unit->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="isi">Isi (Opsional)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="number" name="isi" id="isi" class="form-control" value="1" min="1" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

@@ -39,6 +39,9 @@ class User extends Authenticatable
         if (!$this->role) {
             return false;
         }
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
         return $this->role->permissions->contains('slug', $permissionSlug);
     }
 

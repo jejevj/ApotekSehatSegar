@@ -46,6 +46,7 @@
                                     <select name="level" class="form-control show-tick" required>
                                         <option value="admin" {{ $user->level == 'admin' ? 'selected' : '' }}>Admin</option>
                                         <option value="kasir" {{ $user->level == 'kasir' ? 'selected' : '' }}>Kasir</option>
+                                        <option value="billing" {{ $user->level == 'billing' ? 'selected' : '' }}>Billing</option>
                                     </select>
                                 </div>
                             </div>

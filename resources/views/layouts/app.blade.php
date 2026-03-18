@@ -106,7 +106,18 @@
                 <ul class="list">
                     <li class="header">Menu Utama</li>
                     @if(auth()->user()->role)
-                        @foreach(auth()->user()->role->menus as $menu)
+                        @php
+                            $roleMenus = auth()->user()->role->menus;
+                        @endphp
+                        @if($roleMenus->count() === 0)
+                            <li class="{{ request()->is('/') ? 'active' : '' }}">
+                                <a href="{{ url('/') }}">
+                                    <i class="material-icons">home</i>
+                                    <span>Beranda</span>
+                                </a>
+                            </li>
+                        @endif
+                        @foreach($roleMenus as $menu)
                             @php
                                 // Cek apakah user memiliki permission untuk menu ini
                                 if ($menu->permission_slug && !auth()->user()->hasPermission($menu->permission_slug)) {
@@ -163,6 +174,25 @@
 
     <section class="content">
         <div class="container-fluid">
+            @php
+                $billingDaysLeft = !empty($billingInfo) ? (int) ($billingInfo['days_left'] ?? 999) : 999;
+                $showBillingBanner = !empty($billingInfo) && $billingDaysLeft > 0 && $billingDaysLeft <= 7;
+                $billingAlertClass = $billingDaysLeft <= 1 ? 'alert-danger' : ($billingDaysLeft <= 3 ? 'alert-warning' : 'alert-info');
+            @endphp
+            @if($showBillingBanner)
+                <div class="row clearfix" style="margin-bottom: 10px;">
+                    <div class="col-xs-12">
+                        <div class="alert {{ $billingAlertClass }}" style="margin-bottom: 0; padding: 10px 12px;">
+                            <strong>Tagihan jatuh tempo H-{{ $billingDaysLeft }}</strong>
+                            <span style="margin-left: 10px;">
+                                Rp {{ number_format((int) ($billingInfo['jumlah_tagihan'] ?? 0), 0, ',', '.') }}
+                                {{ !empty($billingInfo['nama_bank']) ? ' - ' . $billingInfo['nama_bank'] : '' }}
+                                {{ !empty($billingInfo['no_rek']) ? ' (' . $billingInfo['no_rek'] . ')' : '' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endif
             @yield('content')
         </div>
     </section>

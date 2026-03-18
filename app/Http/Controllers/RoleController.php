@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Menu;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 
@@ -65,6 +66,7 @@ class RoleController extends Controller
         ]);
 
         $role->permissions()->sync($request->permissions);
+        $this->syncMenusForRole($role);
 
         return redirect()->route('role.index')->with('success', 'Role berhasil ditambahkan');
     }
@@ -91,8 +93,25 @@ class RoleController extends Controller
         ]);
 
         $role->permissions()->sync($request->permissions);
+        $this->syncMenusForRole($role);
 
         return redirect()->route('role.index')->with('success', 'Role berhasil diupdate');
+    }
+
+    private function syncMenusForRole(Role $role): void
+    {
+        $role->loadMissing('permissions');
+        $permissionSlugs = $role->permissions->pluck('slug')->unique()->values();
+
+        $menuIds = Menu::query()
+            ->whereNull('permission_slug')
+            ->orWhereIn('permission_slug', $permissionSlugs)
+            ->pluck('id')
+            ->unique()
+            ->values()
+            ->all();
+
+        $role->menus()->sync($menuIds);
     }
 
     public function destroy($id)

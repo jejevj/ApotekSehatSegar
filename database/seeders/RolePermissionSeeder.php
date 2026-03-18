@@ -18,12 +18,15 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // 1. Create Roles
+        $superAdminRole = Role::updateOrCreate(['name' => 'Super Admin'], ['slug' => 'super_admin']);
         $adminRole = Role::updateOrCreate(['name' => 'Administrator'], ['slug' => 'admin']);
         $kasirRole = Role::updateOrCreate(['name' => 'Kasir'], ['slug' => 'kasir']);
+        $billingRole = Role::updateOrCreate(['name' => 'Billing'], ['slug' => 'billing']);
 
         // 2. Define Features and Actions
         $features = [
             'barang' => ['view', 'create', 'update', 'delete'],
+            'unit' => ['view', 'create', 'update', 'delete'],
             'pelanggan' => ['view', 'create', 'update', 'delete'],
             'penjualan' => ['view', 'create', 'update', 'delete'],
             'pengguna' => ['view', 'create', 'update', 'delete'],
@@ -31,6 +34,7 @@ class RolePermissionSeeder extends Seeder
             'menu' => ['view', 'create', 'update', 'delete'],
             'setting' => ['view', 'update'],
             'laporan' => ['view', 'print'],
+            'billing' => ['manage'],
         ];
 
         $allPermissionIds = [];
@@ -49,8 +53,15 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
-        // 3. Assign All Permissions to Admin
-        $adminRole->permissions()->sync($allPermissionIds);
+        // 3. Assign Permissions
+        // Super Admin: semua permissions
+        $superAdminRole->permissions()->sync($allPermissionIds);
+        // Admin: semua kecuali billing.manage
+        $adminPermissionIds = Permission::where('slug', '!=', 'billing.manage')->pluck('id');
+        $adminRole->permissions()->sync($adminPermissionIds);
+        // Billing: hanya billing.manage
+        $billingPermissionIds = Permission::where('slug', 'billing.manage')->pluck('id');
+        $billingRole->permissions()->sync($billingPermissionIds);
 
         // 4. Assign Limited Permissions to Kasir (Contoh)
         $kasirPermissions = Permission::whereIn('feature', ['penjualan', 'pelanggan', 'barang'])
@@ -71,6 +82,8 @@ class RolePermissionSeeder extends Seeder
                 'role_id' => $adminRole->id,
             ]);
         }
+
+        // Catatan: Penugasan user ke Super Admin dapat dilakukan via UI Pengguna.
 
         $kasirUser = User::where('level', 'kasir')->first();
         if ($kasirUser) {

@@ -8,6 +8,8 @@ use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\BillingSettingController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -16,7 +18,7 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'billing.guard'])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
 
     // Setting Aplikasi
@@ -24,6 +26,21 @@ Route::middleware('auth')->group(function () {
         Route::get('setting', [SettingController::class, 'index'])->name('setting.index');
         Route::put('setting', [SettingController::class, 'update'])->name('setting.update');
     });
+
+    // Satuan Barang
+    Route::middleware('permission:unit.create')->group(function () {
+        Route::get('unit/create', [UnitController::class, 'create'])->name('unit.create');
+        Route::post('unit', [UnitController::class, 'store'])->name('unit.store');
+    });
+    Route::middleware('permission:unit.view')->group(function () {
+        Route::get('unit/data', [UnitController::class, 'data'])->name('unit.data');
+        Route::get('unit', [UnitController::class, 'index'])->name('unit.index');
+    });
+    Route::middleware('permission:unit.update')->group(function () {
+        Route::get('unit/{unit}/edit', [UnitController::class, 'edit'])->name('unit.edit');
+        Route::put('unit/{unit}', [UnitController::class, 'update'])->name('unit.update');
+    });
+    Route::middleware('permission:unit.delete')->delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
 
     // Barang
     Route::middleware('permission:barang.create')->group(function () {
@@ -104,4 +121,23 @@ Route::middleware('auth')->group(function () {
         Route::get('menu/data', [MenuController::class, 'data'])->name('menu.data');
         Route::resource('menu', MenuController::class);
     });
+
+    // Billing Settings (Super Admin only via permission)
+    Route::middleware('permission:billing.manage')->group(function () {
+        Route::get('billing-setting', [BillingSettingController::class, 'index'])->name('billing.index');
+        Route::get('billing-setting/data', [BillingSettingController::class, 'data'])->name('billing.data');
+        Route::get('billing-setting/create', [BillingSettingController::class, 'create'])->name('billing.create');
+        Route::post('billing-setting', [BillingSettingController::class, 'store'])->name('billing.store');
+        Route::get('billing-setting/{id}/edit', [BillingSettingController::class, 'editItem'])->name('billing.edit');
+        Route::put('billing-setting/{id}', [BillingSettingController::class, 'updateItem'])->name('billing.update');
+        Route::patch('billing-setting/{id}/activate', [BillingSettingController::class, 'activate'])->name('billing.activate');
+        Route::patch('billing-setting/{id}/status/{status}', [BillingSettingController::class, 'setStatus'])->name('billing.status');
+        Route::delete('billing-setting/{id}', [BillingSettingController::class, 'destroy'])->name('billing.destroy');
+        // Legacy single-setting paths (optional)
+        Route::get('billing-setting/legacy', [BillingSettingController::class, 'edit'])->name('billing.setting');
+        Route::put('billing-setting/legacy', [BillingSettingController::class, 'update'])->name('billing.setting.update');
+    });
 });
+
+// Billing restricted page
+Route::middleware('billing.guard')->get('/billing/restricted', [\App\Http\Controllers\BillingController::class, 'restricted'])->name('billing.restricted');

@@ -25,15 +25,27 @@
                         </div>
                     </div>
 
-                    <label for="satuan">Satuan</label>
-                    <div class="form-group">
-                        <div class="form-line">
-                            <select name="satuan" class="form-control show-tick">
-                                <option value="BOTOL" {{ $barang->satuan == 'BOTOL' ? 'selected' : '' }}>BOTOL</option>
-                                <option value="STRIP" {{ $barang->satuan == 'STRIP' ? 'selected' : '' }}>STRIP</option>
-                                <option value="PCS" {{ $barang->satuan == 'PCS' ? 'selected' : '' }}>PCS</option>
-                                <option value="BOX" {{ $barang->satuan == 'BOX' ? 'selected' : '' }}>BOX</option>
-                            </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="unit_id">Satuan</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select name="unit_id" id="unit_id" class="form-control show-tick" required>
+                                        <option value="">-- Pilih Satuan --</option>
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}" {{ (int) $selectedUnitId === (int) $unit->id ? 'selected' : '' }}>{{ $unit->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="isi">Isi (Opsional)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="number" name="isi" id="isi" class="form-control" value="{{ (int) ($barang->isi ?? 1) }}" min="1" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

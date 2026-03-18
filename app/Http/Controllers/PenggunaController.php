@@ -61,10 +61,19 @@ class PenggunaController extends Controller
             'username' => 'required|string|max:255|unique:users,username',
             'nama' => 'required|string|max:255',
             'password' => 'required|string|min:4',
-            'level' => 'required|in:admin,kasir',
+            'level' => 'required|in:admin,kasir,billing',
             'role_id' => 'required|exists:roles,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Batasi hanya 1 akun dengan role billing
+        $role = Role::find($validated['role_id']);
+        if ($role && $role->slug === 'billing') {
+            $existing = User::where('role_id', $role->id)->count();
+            if ($existing >= 1) {
+                return redirect()->back()->withInput()->with('error', 'Akun billing sudah ada. Hanya boleh 1 akun billing.');
+            }
+        }
 
         $data = [
             'username' => $validated['username'],
@@ -101,10 +110,19 @@ class PenggunaController extends Controller
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'nama' => 'required|string|max:255',
             'password' => 'nullable|string|min:4',
-            'level' => 'required|in:admin,kasir',
+            'level' => 'required|in:admin,kasir,billing',
             'role_id' => 'required|exists:roles,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Batasi hanya 1 akun dengan role billing (kecuali user ini sendiri)
+        $role = Role::find($validated['role_id']);
+        if ($role && $role->slug === 'billing') {
+            $existing = User::where('role_id', $role->id)->where('id', '<>', $user->id)->count();
+            if ($existing >= 1) {
+                return redirect()->back()->withInput()->with('error', 'Akun billing sudah ada. Hanya boleh 1 akun billing.');
+            }
+        }
 
         $user->username = $validated['username'];
         $user->nama = $validated['nama'];

@@ -15,10 +15,17 @@ class Barang extends Model
     protected $fillable = [
         'kode_barcode',
         'nama_barang',
+        'unit_id',
+        'isi',
         'satuan',
         'harga_beli',
         'stok',
         'harga_jual',
         'profit',
     ];
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id');
+    }
 }
