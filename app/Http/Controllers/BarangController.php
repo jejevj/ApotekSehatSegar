@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Barang;
 use App\Models\Unit;
+use App\Models\Lokasi;
+use App\Models\Rak;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -25,9 +27,15 @@ class BarangController extends Controller
 
     public function data()
     {
-        $barangs = Barang::query();
+        $barangs = Barang::with(['lokasi', 'rak']);
         return DataTables::of($barangs)
             ->addIndexColumn()
+            ->addColumn('nama_lokasi', function ($barang) {
+                return $barang->lokasi->nama_lokasi;
+            })
+            ->addColumn('nama_rak', function ($barang) {
+                return $barang->rak->nama_rak;
+            })
             ->addColumn('aksi', function ($barang) {
                 $buttons = '';
                 if (auth()->user()->hasPermission('barang.update')) {
@@ -48,7 +56,9 @@ class BarangController extends Controller
     public function create()
     {
         $units = Unit::query()->orderBy('nama')->get();
-        return view('barang.create', compact('units'));
+        $lokasis = Lokasi::query()->orderBy('nama_lokasi')->get();
+        $raks = Rak::query()->orderBy('nama_rak')->get();
+        return view('barang.create', compact('units', 'lokasis', 'raks'));
     }
 
     public function store(Request $request)
@@ -57,6 +67,8 @@ class BarangController extends Controller
             'kode_barcode' => 'required|unique:tb_barang',
             'nama_barang' => 'required',
             'unit_id' => 'required|exists:units,id',
+            'lokasi_id' => 'nullable|exists:tb_lokasi,id',
+            'rak_id' => 'nullable|exists:tb_rak,id',
             'isi' => 'nullable|integer|min:1',
             'harga_beli' => 'required|numeric',
             'stok' => 'required|numeric',
@@ -83,12 +95,15 @@ class BarangController extends Controller
     {
         $barang = Barang::findOrFail($id);
         $units = Unit::query()->orderBy('nama')->get();
+        $lokasis = Lokasi::query()->orderBy('nama_lokasi')->get();
+        $raks = Rak::query()->orderBy('nama_rak')->get();
+        
         $selectedUnitId = $barang->unit_id;
         if (!$selectedUnitId && !empty($barang->satuan)) {
             $match = Unit::where('nama', $barang->satuan)->first();
             $selectedUnitId = $match?->id;
         }
-        return view('barang.edit', compact('barang', 'units', 'selectedUnitId'));
+        return view('barang.edit', compact('barang', 'units', 'lokasis', 'raks', 'selectedUnitId'));
     }
 
     public function update(Request $request, $id)
@@ -98,6 +113,8 @@ class BarangController extends Controller
         $request->validate([
             'nama_barang' => 'required',
             'unit_id' => 'required|exists:units,id',
+            'lokasi_id' => 'nullable|exists:tb_lokasi,id',
+            'rak_id' => 'nullable|exists:tb_rak,id',
             'isi' => 'nullable|integer|min:1',
             'harga_beli' => 'required|numeric',
             'stok' => 'required|numeric',

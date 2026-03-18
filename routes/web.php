@@ -9,6 +9,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\LokasiController;
+use App\Http\Controllers\RakController;
 use App\Http\Controllers\BillingSettingController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\DistributorController;
@@ -47,6 +49,36 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
         Route::put('unit/{unit}', [UnitController::class, 'update'])->name('unit.update');
     });
     Route::middleware('permission:unit.delete')->delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+
+    // Lokasi Barang
+    Route::middleware('permission:lokasi.create')->group(function () {
+        Route::get('lokasi/create', [LokasiController::class, 'create'])->name('lokasi.create');
+        Route::post('lokasi', [LokasiController::class, 'store'])->name('lokasi.store');
+    });
+    Route::middleware('permission:lokasi.view')->group(function () {
+        Route::get('lokasi/data', [LokasiController::class, 'data'])->name('lokasi.data');
+        Route::get('lokasi', [LokasiController::class, 'index'])->name('lokasi.index');
+    });
+    Route::middleware('permission:lokasi.update')->group(function () {
+        Route::get('lokasi/{lokasi}/edit', [LokasiController::class, 'edit'])->name('lokasi.edit');
+        Route::put('lokasi/{lokasi}', [LokasiController::class, 'update'])->name('lokasi.update');
+    });
+    Route::middleware('permission:lokasi.delete')->delete('lokasi/{lokasi}', [LokasiController::class, 'destroy'])->name('lokasi.destroy');
+
+    // Rak Barang
+    Route::middleware('permission:rak.create')->group(function () {
+        Route::get('rak/create', [RakController::class, 'create'])->name('rak.create');
+        Route::post('rak', [RakController::class, 'store'])->name('rak.store');
+    });
+    Route::middleware('permission:rak.view')->group(function () {
+        Route::get('rak/data', [RakController::class, 'data'])->name('rak.data');
+        Route::get('rak', [RakController::class, 'index'])->name('rak.index');
+    });
+    Route::middleware('permission:rak.update')->group(function () {
+        Route::get('rak/{rak}/edit', [RakController::class, 'edit'])->name('rak.edit');
+        Route::put('rak/{rak}', [RakController::class, 'update'])->name('rak.update');
+    });
+    Route::middleware('permission:rak.delete')->delete('rak/{rak}', [RakController::class, 'destroy'])->name('rak.destroy');
 
     // Barang
     Route::middleware('permission:barang.create')->group(function () {

@@ -49,6 +49,35 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="lokasi_id">Lokasi</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select name="lokasi_id" id="lokasi_id" class="form-control show-tick" data-container="body">
+                                        <option value="">-- Belum Terorganisir --</option>
+                                        @foreach($lokasis as $lokasi)
+                                            <option value="{{ $lokasi->id }}" {{ $barang->lokasi_id == $lokasi->id ? 'selected' : '' }}>{{ $lokasi->nama_lokasi }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="rak_id">Rak</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select name="rak_id" id="rak_id" class="form-control show-tick" data-container="body">
+                                        <option value="">-- Belum Terorganisir --</option>
+                                        @foreach($raks as $rak)
+                                            <option value="{{ $rak->id }}" {{ $barang->rak_id == $rak->id ? 'selected' : '' }}>{{ $rak->nama_rak }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <label for="harga_beli">Harga Beli</label>
                     <div class="form-group">
                         <div class="form-line">
