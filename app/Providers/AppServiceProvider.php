@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\View;
 use App\Models\Setting;
+use URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
                     $query->bindings,
                     $query->time
                 );
+                if (config('app.env') !== 'local' || env('FORCE_HTTPS', false)) {
+                    URL::forceScheme('https');
+                }
             });
         }
 

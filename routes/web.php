@@ -8,6 +8,7 @@ use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -24,6 +25,21 @@ Route::middleware('auth')->group(function () {
         Route::get('setting', [SettingController::class, 'index'])->name('setting.index');
         Route::put('setting', [SettingController::class, 'update'])->name('setting.update');
     });
+
+    // Satuan Barang
+    Route::middleware('permission:unit.create')->group(function () {
+        Route::get('unit/create', [UnitController::class, 'create'])->name('unit.create');
+        Route::post('unit', [UnitController::class, 'store'])->name('unit.store');
+    });
+    Route::middleware('permission:unit.view')->group(function () {
+        Route::get('unit/data', [UnitController::class, 'data'])->name('unit.data');
+        Route::get('unit', [UnitController::class, 'index'])->name('unit.index');
+    });
+    Route::middleware('permission:unit.update')->group(function () {
+        Route::get('unit/{unit}/edit', [UnitController::class, 'edit'])->name('unit.edit');
+        Route::put('unit/{unit}', [UnitController::class, 'update'])->name('unit.update');
+    });
+    Route::middleware('permission:unit.delete')->delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
 
     // Barang
     Route::middleware('permission:barang.create')->group(function () {

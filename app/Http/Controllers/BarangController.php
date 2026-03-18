@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Barang;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -46,7 +47,8 @@ class BarangController extends Controller
 
     public function create()
     {
-        return view('barang.create');
+        $units = Unit::query()->orderBy('nama')->get();
+        return view('barang.create', compact('units'));
     }
 
     public function store(Request $request)
@@ -54,15 +56,20 @@ class BarangController extends Controller
         $request->validate([
             'kode_barcode' => 'required|unique:tb_barang',
             'nama_barang' => 'required',
-            'satuan' => 'required',
+            'unit_id' => 'required|exists:units,id',
+            'isi' => 'nullable|integer|min:1',
             'harga_beli' => 'required|numeric',
             'stok' => 'required|numeric',
             'harga_jual' => 'required|numeric',
         ]);
 
+        $unit = Unit::findOrFail($request->unit_id);
+        $data = $request->all();
+        $data['satuan'] = $unit->nama;
+        $data['isi'] = $unit->is_single ? 1 : ((int) ($request->isi ?? 1));
         $profit = $request->harga_jual - $request->harga_beli;
 
-        Barang::create(array_merge($request->all(), ['profit' => $profit]));
+        Barang::create(array_merge($data, ['profit' => $profit]));
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan');
     }
@@ -75,7 +82,13 @@ class BarangController extends Controller
     public function edit($id)
     {
         $barang = Barang::findOrFail($id);
-        return view('barang.edit', compact('barang'));
+        $units = Unit::query()->orderBy('nama')->get();
+        $selectedUnitId = $barang->unit_id;
+        if (!$selectedUnitId && !empty($barang->satuan)) {
+            $match = Unit::where('nama', $barang->satuan)->first();
+            $selectedUnitId = $match?->id;
+        }
+        return view('barang.edit', compact('barang', 'units', 'selectedUnitId'));
     }
 
     public function update(Request $request, $id)
@@ -84,15 +97,20 @@ class BarangController extends Controller
 
         $request->validate([
             'nama_barang' => 'required',
-            'satuan' => 'required',
+            'unit_id' => 'required|exists:units,id',
+            'isi' => 'nullable|integer|min:1',
             'harga_beli' => 'required|numeric',
             'stok' => 'required|numeric',
             'harga_jual' => 'required|numeric',
         ]);
 
+        $unit = Unit::findOrFail($request->unit_id);
+        $data = $request->all();
+        $data['satuan'] = $unit->nama;
+        $data['isi'] = $unit->is_single ? 1 : ((int) ($request->isi ?? 1));
         $profit = $request->harga_jual - $request->harga_beli;
 
-        $barang->update(array_merge($request->all(), ['profit' => $profit]));
+        $barang->update(array_merge($data, ['profit' => $profit]));
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil diupdate');
     }

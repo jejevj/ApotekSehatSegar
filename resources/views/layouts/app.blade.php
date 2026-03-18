@@ -4,12 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
     <title>{{ $setting->nama_aplikasi ?? 'Apotek App' }} | Point of Sale</title>
     <!-- Favicon-->
-    <link rel="icon" href="{{ $setting->favicon ? asset('images/' . $setting->favicon) : asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ $setting->favicon ? asset('images/' . $setting->favicon) : asset('favicon.ico') }}"
+        type="image/x-icon">
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet"
+        type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
 
     <!-- Bootstrap Core Css -->
@@ -67,7 +71,8 @@
     <nav class="navbar">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
+                <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#navbar-collapse" aria-expanded="false"></a>
                 <a href="javascript:void(0);" class="bars"></a>
                 <a class="navbar-brand" href="{{ url('/') }}">{{ $setting->nama_aplikasi ?? 'Apotek App' }}</a>
             </div>
@@ -80,19 +85,24 @@
             <!-- User Info -->
             <div class="user-info">
                 <div class="image">
-                    <img src="{{ asset('images/' . (auth()->user()->foto ?? 'user.png')) }}" width="48" height="48" alt="User" />
+                    <img src="{{ asset('images/' . (auth()->user()->foto ?? 'user.png')) }}" width="48" height="48"
+                        alt="User" />
                 </div>
                 <div class="info-container">
-                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ auth()->user()->nama }}</div>
+                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ auth()->user()->nama }}</div>
                     <div class="email">Anda login sebagai, {{ auth()->user()->level }}</div>
                     <div class="btn-group user-helper-dropdown">
-                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
+                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="true">keyboard_arrow_down</i>
                         <ul class="dropdown-menu pull-right">
                             <li>
-                                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <a href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <i class="material-icons">input</i>Keluar
                                 </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                    style="display: none;">
                                     @csrf
                                 </form>
                             </li>
@@ -119,7 +129,7 @@
                                 } elseif ($menu->url) {
                                     $isActive = request()->is(trim($menu->url, '/') . '*');
                                 }
-                                
+
                                 $href = 'javascript:void(0);';
                                 if ($menu->route_name) {
                                     $href = route($menu->route_name);
@@ -128,7 +138,8 @@
                                 }
                             @endphp
                             <li class="{{ $isActive ? 'active' : '' }}">
-                                <a href="{{ $href }}" @if($menu->target) data-toggle="modal" data-target="{{ $menu->target }}" @endif>
+                                <a href="{{ $href }}" @if($menu->target) data-toggle="modal" data-target="{{ $menu->target }}"
+                                @endif>
                                     @if($menu->icon)
                                         <i class="material-icons">{{ $menu->icon }}</i>
                                     @endif
@@ -223,9 +234,9 @@
     <script src="{{ asset('js/pages/tables/jquery-datatable.js') }}"></script>
 
     <script type="text/javascript">
-    $(function () {
-        $('.count-to').countTo();
-    });
+        $(function () {
+            $('.count-to').countTo();
+        });
     </script>
 
     <!-- Demo Js -->
@@ -234,9 +245,9 @@
 
     <script>
         // Automatically close the alert after 5 seconds
-        window.setTimeout(function() {
-            $(".alert").fadeTo(500, 0).slideUp(500, function(){
-                $(this).remove(); 
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
             });
         }, 5000);
     </script>

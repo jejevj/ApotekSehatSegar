@@ -24,6 +24,7 @@ class RolePermissionSeeder extends Seeder
         // 2. Define Features and Actions
         $features = [
             'barang' => ['view', 'create', 'update', 'delete'],
+            'unit' => ['view', 'create', 'update', 'delete'],
             'pelanggan' => ['view', 'create', 'update', 'delete'],
             'penjualan' => ['view', 'create', 'update', 'delete'],
             'pengguna' => ['view', 'create', 'update', 'delete'],
