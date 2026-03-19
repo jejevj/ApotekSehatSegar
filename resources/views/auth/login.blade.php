@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>Sign In | Apotek Sehat Segar - Point of Sale</title>
     <!-- Favicon-->
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
