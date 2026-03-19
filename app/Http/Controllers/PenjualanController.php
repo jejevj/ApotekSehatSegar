@@ -17,7 +17,7 @@ class PenjualanController extends Controller
         $this->middleware('permission:penjualan.view')->only('index', 'data', 'show');
         $this->middleware('permission:penjualan.create')->only('create', 'addItem', 'addFromModal', 'updateItem', 'removeItem', 'storeDetail', 'cancel');
         $this->middleware('permission:penjualan.delete')->only('destroy');
-        $this->middleware('permission:laporan.view')->only('cetakStruk');
+        $this->middleware('permission:penjualan.print_struk')->only('cetakStruk');
         $this->middleware('permission:laporan.print')->only('cetak');
     }
 
@@ -51,7 +51,7 @@ class PenjualanController extends Controller
                 if (auth()->user()->hasPermission('penjualan.view')) {
                     $buttons .= '<a href="' . route('penjualan.show', $row->kode_penjualan) . '" class="btn btn-xs btn-info"><i class="material-icons">visibility</i></a>';
                 }
-                if (auth()->user()->hasPermission('laporan.view')) {
+                if (auth()->user()->hasPermission('penjualan.print_struk')) {
                     $buttons .= ' <a href="' . route('penjualan.cetakStruk', ['kode_pjl' => $row->kode_penjualan]) . '" target="_blank" class="btn btn-xs btn-success"><i class="material-icons">print</i></a>';
                 }
                 if (auth()->user()->hasPermission('penjualan.delete')) {

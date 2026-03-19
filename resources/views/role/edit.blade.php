@@ -27,12 +27,16 @@
                                     <h4 style="margin:0; font-size: 14px;">{{ strtoupper($feature) }}</h4>
                                 </div>
                                 <div class="body" style="padding: 10px;">
-                                    @foreach($perms as $perm)
-                                    <div class="demo-checkbox">
-                                        <input type="checkbox" id="perm_{{ $perm->id }}" name="permissions[]" value="{{ $perm->id }}" class="filled-in chk-col-pink" {{ in_array($perm->id, $rolePermissions) ? 'checked' : '' }}>
-                                        <label for="perm_{{ $perm->id }}">{{ ucfirst($perm->action) }}</label>
+                                    <div class="row">
+                                        @foreach($perms as $perm)
+                                        <div class="col-md-12">
+                                            <div class="demo-checkbox">
+                                                <input type="checkbox" id="perm_{{ $perm->id }}" name="permissions[]" value="{{ $perm->id }}" class="filled-in chk-col-pink" {{ in_array($perm->id, $rolePermissions) ? 'checked' : '' }}>
+                                                <label for="perm_{{ $perm->id }}">{{ $perm->name }}</label>
+                                            </div>
+                                        </div>
+                                        @endforeach
                                     </div>
-                                    @endforeach
                                 </div>
                             </div>
                         </div>

@@ -151,7 +151,7 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
     Route::middleware('permission:pelanggan.delete')->delete('pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
 
     // Cetak Struk & Laporan
-    Route::middleware('permission:laporan.view')->get('penjualan/cetak-struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.cetakStruk');
+    Route::middleware('permission:penjualan.print_struk')->get('penjualan/cetak-struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.cetakStruk');
     Route::middleware('permission:laporan.print')->post('/laporan/cetak', [PenjualanController::class, 'cetak'])->name('laporan.cetak');
 
     // Penjualan

@@ -30,7 +30,7 @@ class RolePermissionSeeder extends Seeder
             'rak' => ['view', 'create', 'update', 'delete'],
             'opname' => ['view', 'create', 'update', 'delete', 'approve'],
             'pelanggan' => ['view', 'create', 'update', 'delete'],
-            'penjualan' => ['view', 'create', 'update', 'delete'],
+            'penjualan' => ['view', 'create', 'update', 'delete', 'print_struk'],
             'distributor' => ['view', 'create', 'update', 'delete'],
             'pembelian' => ['view', 'create', 'update', 'delete'],
             'pengguna' => ['view', 'create', 'update', 'delete'],
@@ -45,10 +45,20 @@ class RolePermissionSeeder extends Seeder
 
         foreach ($features as $feature => $actions) {
             foreach ($actions as $action) {
+                // Custom Name for Specific Actions
+                $customNames = [
+                    'print_struk' => 'Cetak Struk',
+                    'approve' => 'Setujui',
+                    'print' => 'Cetak Laporan',
+                    'manage' => 'Kelola',
+                ];
+
+                $actionName = isset($customNames[$action]) ? $customNames[$action] : ucfirst($action);
+
                 $permission = Permission::updateOrCreate(
                     ['slug' => $feature . '.' . $action],
                     [
-                        'name' => ucfirst($action) . ' ' . ucfirst($feature),
+                        'name' => $actionName . ' ' . ucfirst($feature),
                         'feature' => $feature,
                         'action' => $action,
                     ]
@@ -69,8 +79,10 @@ class RolePermissionSeeder extends Seeder
 
         // 4. Assign Limited Permissions to Kasir (Contoh)
         $kasirPermissions = Permission::whereIn('feature', ['penjualan', 'pelanggan', 'barang'])
-            ->whereIn('action', ['view', 'create'])
-            ->pluck('id');
+            ->whereIn('action', ['view', 'create', 'print_struk'])
+            ->pluck('id')
+            ->toArray();
+
         $kasirRole->permissions()->sync($kasirPermissions);
 
         // 5. Update Existing Users or Create Admin
