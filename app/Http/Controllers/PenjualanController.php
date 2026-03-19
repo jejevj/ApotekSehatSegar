@@ -383,6 +383,13 @@ class PenjualanController extends Controller
         $pelanggan = Pelanggan::where('kode_pelanggan', $penjualan->id_pelanggan)->first();
         $user = auth()->user();
         $detail = DB::table('tb_penjualan_detail')->where('kode_penjualan', $kode_pj)->first();
+        $metodePembayaranNama = 'Tunai';
+        if (!empty($detail?->metode_pembayaran_id)) {
+            $mp = MetodePembayaran::find($detail->metode_pembayaran_id);
+            if ($mp && $mp->is_aktif) {
+                $metodePembayaranNama = $mp->nama;
+            }
+        }
         
         $items = DB::table('tb_penjualan as p')
             ->join('tb_barang as b', 'p.kode_barcode', '=', 'b.kode_barcode')
@@ -412,7 +419,7 @@ class PenjualanController extends Controller
             )
             ->get();
             
-        return view('penjualan.cetak_struk', compact('penjualan', 'pelanggan', 'user', 'items', 'detail'));
+        return view('penjualan.cetak_struk', compact('penjualan', 'pelanggan', 'user', 'items', 'detail', 'metodePembayaranNama'));
     }
 
     public function show($id)
@@ -437,7 +444,15 @@ class PenjualanController extends Controller
             ->where('kode_penjualan', $id)
             ->first();
 
-        return view('penjualan.show', compact('penjualan', 'items', 'detail'));
+        $metodePembayaranNama = 'Tunai';
+        if (!empty($detail?->metode_pembayaran_id)) {
+            $mp = MetodePembayaran::find($detail->metode_pembayaran_id);
+            if ($mp && $mp->is_aktif) {
+                $metodePembayaranNama = $mp->nama;
+            }
+        }
+
+        return view('penjualan.show', compact('penjualan', 'items', 'detail', 'metodePembayaranNama'));
     }
 
     public function destroy($id)

@@ -56,6 +56,10 @@
                                     <th>Kasir</th>
                                     <td>{{ $penjualan->kasir_nama ?? '-' }}</td>
                                 </tr>
+                                <tr>
+                                    <th>Metode Bayar</th>
+                                    <td>{{ $metodePembayaranNama }}</td>
+                                </tr>
                             </table>
                         </div>
                     </div>

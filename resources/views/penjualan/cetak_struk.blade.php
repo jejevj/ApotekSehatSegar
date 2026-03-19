@@ -47,6 +47,10 @@
             <td class="text-left">Ksr</td>
             <td class="text-right">{{ $user->nama ?? '-' }}</td>
         </tr>
+        <tr>
+            <td class="text-left">Bayar</td>
+            <td class="text-right">{{ $metodePembayaranNama }}</td>
+        </tr>
     </table>
 
     <hr>
