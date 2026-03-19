@@ -113,6 +113,13 @@ class MenuSeeder extends Seeder
                 'permission_slug' => 'laporan.view',
                 'order' => 14,
             ],
+            [
+                'name' => 'Metode Pembayaran',
+                'icon' => 'payment',
+                'route_name' => 'metode_pembayaran.index',
+                'permission_slug' => 'metode_pembayaran.view',
+                'order' => 15,
+            ],
         ];
 
         foreach ($menus as $menuData) {

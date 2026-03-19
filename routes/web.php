@@ -11,6 +11,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\RakController;
 use App\Http\Controllers\BillingSettingController;
+use App\Http\Controllers\MetodePembayaranController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\DistributorController;
 use App\Http\Controllers\PembelianController;
@@ -108,6 +109,21 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
     });
     Route::middleware('permission:pembelian.update')->post('pembelian/{pembelian}/bayar', [PembelianController::class, 'bayar'])->name('pembelian.bayar');
     Route::middleware('permission:pembelian.delete')->delete('pembelian/{pembelian}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
+
+    // Metode Pembayaran
+    Route::middleware('permission:metode_pembayaran.create')->group(function () {
+        Route::get('metode-pembayaran/create', [MetodePembayaranController::class, 'create'])->name('metode_pembayaran.create');
+        Route::post('metode-pembayaran', [MetodePembayaranController::class, 'store'])->name('metode_pembayaran.store');
+    });
+    Route::middleware('permission:metode_pembayaran.view')->group(function () {
+        Route::get('metode-pembayaran/data', [MetodePembayaranController::class, 'data'])->name('metode_pembayaran.data');
+        Route::get('metode-pembayaran', [MetodePembayaranController::class, 'index'])->name('metode_pembayaran.index');
+    });
+    Route::middleware('permission:metode_pembayaran.update')->group(function () {
+        Route::get('metode-pembayaran/{metode_pembayaran}/edit', [MetodePembayaranController::class, 'edit'])->name('metode_pembayaran.edit');
+        Route::put('metode-pembayaran/{metode_pembayaran}', [MetodePembayaranController::class, 'update'])->name('metode_pembayaran.update');
+    });
+    Route::middleware('permission:metode_pembayaran.delete')->delete('metode-pembayaran/{metode_pembayaran}', [MetodePembayaranController::class, 'destroy'])->name('metode_pembayaran.destroy');
 
     // Opname Stok
     Route::middleware('permission:opname.create')->group(function () {

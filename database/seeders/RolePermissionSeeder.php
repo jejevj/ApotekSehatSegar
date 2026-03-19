@@ -33,6 +33,7 @@ class RolePermissionSeeder extends Seeder
             'penjualan' => ['view', 'create', 'update', 'delete', 'print_struk'],
             'distributor' => ['view', 'create', 'update', 'delete'],
             'pembelian' => ['view', 'create', 'update', 'delete'],
+            'metode_pembayaran' => ['view', 'create', 'update', 'delete'],
             'pengguna' => ['view', 'create', 'update', 'delete'],
             'role' => ['view', 'create', 'update', 'delete'],
             'menu' => ['view', 'create', 'update', 'delete'],

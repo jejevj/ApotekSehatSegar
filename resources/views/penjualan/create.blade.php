@@ -50,6 +50,16 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-3">
+                            <label>Metode Pembayaran</label>
+                            <select name="metode_pembayaran_id" class="form-control show-tick" data-container="body" style="border-radius: 5px;">
+                                @foreach($metode_pembayaran as $m)
+                                    <option value="{{ $m->id }}">
+                                        {{ $m->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     <div class="table-responsive" style="margin-top: 20px;">

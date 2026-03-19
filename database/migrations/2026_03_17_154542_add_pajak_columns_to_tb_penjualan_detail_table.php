@@ -21,6 +21,9 @@ return new class extends Migration
             if (!Schema::hasColumn('tb_penjualan_detail', 'total_akhir')) {
                 $table->integer('total_akhir')->default(0);
             }
+            if (!Schema::hasColumn('tb_penjualan_detail', 'metode_pembayaran_id')) {
+                $table->unsignedBigInteger('metode_pembayaran_id')->nullable()->after('kode_penjualan');
+            }
         });
     }
 
@@ -39,6 +42,9 @@ return new class extends Migration
             }
             if (Schema::hasColumn('tb_penjualan_detail', 'total_akhir')) {
                 $columns[] = 'total_akhir';
+            }
+            if (Schema::hasColumn('tb_penjualan_detail', 'metode_pembayaran_id')) {
+                $columns[] = 'metode_pembayaran_id';
             }
             if (!empty($columns)) {
                 $table->dropColumn($columns);

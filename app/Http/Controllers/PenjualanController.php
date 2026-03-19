@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\MetodePembayaran;
 
 class PenjualanController extends Controller
 {
@@ -83,8 +84,9 @@ class PenjualanController extends Controller
             
         $pelanggan = Pelanggan::all();
         $total_bayar = $items->sum('total');
+        $metode_pembayaran = MetodePembayaran::where('is_aktif', true)->orderBy('nama')->get();
         
-        return view('penjualan.create', compact('kode_penjualan', 'items', 'pelanggan', 'total_bayar'));
+        return view('penjualan.create', compact('kode_penjualan', 'items', 'pelanggan', 'total_bayar', 'metode_pembayaran'));
     }
 
     public function addItem(Request $request)
@@ -255,6 +257,17 @@ class PenjualanController extends Controller
         $kode_penjualan = $request->kode_penjualan;
         $now = Carbon::now();
 
+        $metodePembayaranId = $request->metode_pembayaran_id;
+        if ($metodePembayaranId) {
+            $exists = MetodePembayaran::where('is_aktif', true)->whereKey($metodePembayaranId)->exists();
+            if (!$exists) {
+                if ($request->expectsJson()) {
+                    return response()->json(['error' => 'Metode pembayaran tidak valid'], 400);
+                }
+                return redirect()->route('penjualan.create', ['kodepj' => $kode_penjualan])->with('error', 'Metode pembayaran tidak valid');
+            }
+        }
+
         $totalDb = (int) Penjualan::where('kode_penjualan', $kode_penjualan)->sum('total');
         $diskonGlobal = (int) ($request->diskon ?? 0);
         if ($diskonGlobal < 0) {
@@ -313,6 +326,7 @@ class PenjualanController extends Controller
                 'pajak_nominal' => $pajakNominal,
                 'total' => $totalDb,
                 'total_akhir' => $totalAkhir,
+                'metode_pembayaran_id' => $metodePembayaranId,
             ]
         );
 
