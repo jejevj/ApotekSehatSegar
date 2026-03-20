@@ -149,6 +149,7 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
     });
     Route::middleware('permission:opname.view')->group(function () {
         Route::get('opname/data', [StockOpnameController::class, 'data'])->name('opname.data');
+        Route::get('opname/search-barang', [StockOpnameController::class, 'searchBarang'])->name('opname.searchBarang');
         Route::get('opname', [StockOpnameController::class, 'index'])->name('opname.index');
         Route::get('opname/{opname}', [StockOpnameController::class, 'show'])->name('opname.show');
         Route::get('opname/{opname}/items', [StockOpnameController::class, 'dataItems'])->name('opname.dataItems');

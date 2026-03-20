@@ -336,5 +336,24 @@ class StockOpnameController extends Controller
         $opname->delete();
         return redirect()->route('opname.index')->with('success', 'Opname berhasil dihapus');
     }
+
+    public function searchBarang(Request $request)
+    {
+        $barangs = Barang::query()->with(['rak', 'unit', 'category']);
+
+        return DataTables::of($barangs)
+            ->addIndexColumn()
+            ->addColumn('nama_kategori', function ($barang) {
+                return $barang->category->nama_kategori;
+            })
+            ->addColumn('nama_lokasi_rak', function ($barang) {
+                return $barang->rak->nama_lokasi . ' - ' . $barang->rak->nama_rak;
+            })
+            ->addColumn('aksi', function ($barang) {
+                return '<button type="button" class="btn btn-xs btn-primary select-barang" data-barcode="' . $barang->kode_barcode . '">Pilih</button>';
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
 }
 
