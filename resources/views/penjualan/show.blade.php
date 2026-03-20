@@ -79,9 +79,10 @@
                             <tbody>
                                 @foreach($items as $index => $item)
                                     @php
-                                        $hargaAwal = (int) ($item->barang->harga_jual ?? 0);
+                                        $hargaNormal = (int) ($item->barang->harga_jual ?? 0);
+                                        $hargaJual = (int) ($item->harga_jual_kustom ?? $hargaNormal);
                                         $potItem = (int) ($item->potongan_item ?? 0);
-                                        $hargaAkhir = max(0, $hargaAwal - $potItem);
+                                        $hargaAkhir = max(0, $hargaJual - $potItem);
                                         $diskonText = '-';
                                         if ($potItem > 0) {
                                             if (($item->diskon_tipe ?? 'rupiah') === 'persen') {
@@ -95,18 +96,30 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>
                                             {{ $item->barang->nama_barang ?? '-' }}
-                                            <div class="text-muted" style="font-size: 12px;">{{ $item->kode_barcode }}</div>
+                                            <div class="text-muted" style="font-size: 11px;">{{ $item->kode_barcode }}</div>
+                                            @if($item->harga_jual_kustom)
+                                                <div class="text-info" style="font-size: 11px;">
+                                                    <i class="material-icons" style="font-size: 11px; vertical-align: middle;">edit</i> 
+                                                    Harga diubah oleh: {{ $item->pengubah->nama ?? '-' }}
+                                                </div>
+                                            @endif
                                         </td>
                                         <td class="text-right">
+                                            @if($item->harga_jual_kustom)
+                                                <div class="text-muted" style="text-decoration: line-through; font-size: 11px;">
+                                                    Rp {{ number_format($hargaNormal, 0, ',', '.') }}
+                                                </div>
+                                            @endif
+                                            
                                             @if($potItem > 0)
-                                                <div class="text-muted" style="text-decoration: line-through;">
-                                                    Rp {{ number_format($hargaAwal, 0, ',', '.') }}
+                                                <div class="text-muted" style="text-decoration: line-through; font-size: 11px;">
+                                                    Rp {{ number_format($hargaJual, 0, ',', '.') }}
                                                 </div>
                                                 <div>
                                                     Rp {{ number_format($hargaAkhir, 0, ',', '.') }}
                                                 </div>
                                             @else
-                                                Rp {{ number_format($hargaAwal, 0, ',', '.') }}
+                                                Rp {{ number_format($hargaJual, 0, ',', '.') }}
                                             @endif
                                         </td>
                                         <td class="text-right">{{ $item->jumlah }}</td>

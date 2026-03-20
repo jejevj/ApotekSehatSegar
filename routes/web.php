@@ -235,10 +235,20 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
     Route::middleware('permission:role.delete')->delete('role/{role}', [RoleController::class, 'destroy'])->name('role.destroy');
 
     // Menu Management
-    Route::middleware('permission:pengguna.view')->group(function () {
+    Route::middleware('permission:menu.view')->group(function () {
         Route::get('menu/data', [MenuController::class, 'data'])->name('menu.data');
-        Route::resource('menu', MenuController::class);
+        Route::post('menu/update-order', [MenuController::class, 'updateOrder'])->name('menu.updateOrder');
+        Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
     });
+    Route::middleware('permission:menu.create')->group(function () {
+        Route::get('menu/create', [MenuController::class, 'create'])->name('menu.create');
+        Route::post('menu', [MenuController::class, 'store'])->name('menu.store');
+    });
+    Route::middleware('permission:menu.update')->group(function () {
+        Route::get('menu/{menu}/edit', [MenuController::class, 'edit'])->name('menu.edit');
+        Route::put('menu/{menu}', [MenuController::class, 'update'])->name('menu.update');
+    });
+    Route::middleware('permission:menu.delete')->delete('menu/{menu}', [MenuController::class, 'destroy'])->name('menu.destroy');
 
     // Billing Settings (Super Admin only via permission)
     Route::middleware('permission:billing.manage')->group(function () {

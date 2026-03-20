@@ -213,10 +213,23 @@ class PenjualanController extends Controller
                 return response()->json(['error' => 'Jumlah minimal 1'], 400);
             }
             $item->jumlah = $qtyValue;
+        } elseif ($field == 'harga_jual_kustom') {
+            $priceValue = ($value === null || $value === '') ? null : (int) $value;
+            
+            if ($priceValue !== null) {
+                if ($priceValue < $barang->harga_beli) {
+                    return response()->json(['error' => 'Harga jual tidak boleh kurang dari harga beli (Rp. ' . number_format($barang->harga_beli, 0, ',', '.') . ')'], 400);
+                }
+                $item->harga_jual_kustom = $priceValue;
+                $item->user_id_pengubah = auth()->id();
+            } else {
+                $item->harga_jual_kustom = null;
+                $item->user_id_pengubah = null;
+            }
         }
 
         // Hitung ulang total berdasarkan data terbaru di item
-        $harga_jual = $barang->harga_jual;
+        $harga_jual = $item->harga_jual_kustom ?? $barang->harga_jual;
         $potongan = 0;
         if ($item->diskon_tipe == 'persen') {
             $potongan = ($harga_jual * $item->diskon_item) / 100;
@@ -366,7 +379,29 @@ class PenjualanController extends Controller
         $tgl_awal = $request->tgl_awal;
         $tgl_akhir = $request->tgl_akhir;
 
-        $penjualans = Penjualan::whereBetween('tgl_penjualan', [$tgl_awal, $tgl_akhir])->get();
+        $penjualans = DB::table('tb_penjualan_detail as pd')
+            ->leftJoin('tb_penjualan as p', 'pd.kode_penjualan', '=', 'p.kode_penjualan')
+            ->leftJoin('tb_pelanggan as pl', 'p.id_pelanggan', '=', 'pl.kode_pelanggan')
+            ->leftJoin('users as u', 'p.id_user', '=', 'u.id')
+            ->leftJoin('metode_pembayarans as mp', 'pd.metode_pembayaran_id', '=', 'mp.id')
+            ->select(
+                'pd.kode_penjualan',
+                'pd.waktu_transaksi',
+                'pl.nama as pelanggan_nama',
+                'u.nama as kasir_nama',
+                'mp.nama as metode_pembayaran',
+                'pd.total as subtotal',
+                'pd.diskon',
+                'pd.pajak_nominal',
+                'pd.total_akhir',
+                'pd.bayar',
+                'pd.kembali'
+            )
+            ->whereDate('pd.waktu_transaksi', '>=', $tgl_awal)
+            ->whereDate('pd.waktu_transaksi', '<=', $tgl_akhir)
+            ->groupBy('pd.kode_penjualan', 'pd.waktu_transaksi', 'pl.nama', 'u.nama', 'mp.nama', 'pd.total', 'pd.diskon', 'pd.pajak_nominal', 'pd.total_akhir', 'pd.bayar', 'pd.kembali')
+            ->orderBy('pd.waktu_transaksi', 'desc')
+            ->get();
 
         return view('penjualan.cetak', compact('penjualans', 'tgl_awal', 'tgl_akhir'));
     }
@@ -407,6 +442,8 @@ class PenjualanController extends Controller
                 'p.total as line_total',
                 'b.nama_barang',
                 'b.harga_jual',
+                'p.harga_jual_kustom',
+                'p.user_id_pengubah',
                 'pd.waktu_transaksi',
                 'pd.bayar',
                 'pd.kembali',

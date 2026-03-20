@@ -26,9 +26,12 @@ class MenuController extends Controller
 
     public function data()
     {
-        $menus = Menu::query()->with('parent');
+        $menus = Menu::query()->with('parent')->orderBy('order');
         return DataTables::of($menus)
             ->addIndexColumn()
+            ->addColumn('drag_handle', function ($menu) {
+                return '<i class="material-icons drag-handle" style="cursor: move;">open_with</i>';
+            })
             ->addColumn('parent_name', function ($menu) {
                 return $menu->parent ? $menu->parent->name : '-';
             })
@@ -45,8 +48,23 @@ class MenuController extends Controller
                 }
                 return $buttons;
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['drag_handle', 'aksi'])
             ->make(true);
+    }
+
+    public function updateOrder(Request $request)
+    {
+        $request->validate([
+            'orders' => 'required|array',
+            'orders.*.id' => 'required|exists:menus,id',
+            'orders.*.order' => 'required|numeric'
+        ]);
+
+        foreach ($request->orders as $orderData) {
+            Menu::where('id', $orderData['id'])->update(['order' => $orderData['order']]);
+        }
+
+        return response()->json(['success' => 'Urutan menu berhasil diperbarui']);
     }
 
     public function create()

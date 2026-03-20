@@ -69,7 +69,8 @@
                                     <th>No</th>
                                     <th>Kode Barcode</th>
                                     <th>Nama Barang</th>
-                                    <th>Harga</th>
+                                    <th>Harga Normal</th>
+                                    <th>Harga Jual</th>
                                 <th>Jumlah</th>
                                 <th>Diskon/Item</th>
                                 <th>Potongan</th>
@@ -85,6 +86,18 @@
                                         <td>{{ $item->barang->nama_barang ?? '-' }}</td>
                                         <td>{{ number_format($item->barang->harga_jual ?? 0, 0, ',', '.') }}</td>
                                         <td width="15%">
+                                            <input type="number" 
+                                                   value="{{ $item->harga_jual_kustom ?? $item->barang->harga_jual }}" 
+                                                   class="form-control input-sm item-update" 
+                                                   data-id="{{ $item->id }}" 
+                                                   data-field="harga_jual_kustom" 
+                                                   min="{{ $item->barang->harga_beli }}"
+                                                   title="Harga beli: Rp. {{ number_format($item->barang->harga_beli, 0, ',', '.') }}">
+                                            @if($item->harga_jual_kustom)
+                                                <small class="text-info">Diubah oleh: {{ $item->pengubah->nama ?? '-' }}</small>
+                                            @endif
+                                        </td>
+                                        <td width="10%">
                                             <input type="number" value="{{ $item->jumlah }}" class="form-control input-sm item-update" data-id="{{ $item->id }}" data-field="jumlah" min="1" max="{{ $item->barang->stok + $item->jumlah }}">
                                         </td>
                                         <td width="20%">

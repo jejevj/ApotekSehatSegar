@@ -59,21 +59,22 @@
         @php $total_bayar = 0; $diskon = 0; $bayar = 0; $kembali = 0; $pajakNominal = 0; $totalAkhir = 0; @endphp
         @foreach($items as $item)
             @php
-                $hargaAwal = (int) ($item->harga_jual ?? 0);
+                $hargaNormal = (int) ($item->harga_jual ?? 0);
+                $hargaJual = (int) ($item->harga_jual_kustom ?? $hargaNormal);
                 $potItem = (int) ($item->potongan_item ?? 0);
-                $hargaAkhir = max(0, $hargaAwal - $potItem);
+                $hargaAkhir = max(0, $hargaJual - $potItem);
             @endphp
             <tr>
                 <td colspan="2" class="item-name">{{ $item->nama_barang }}</td>
             </tr>
             <tr>
                 <td class="text-left">
-                    @if($potItem > 0)
-                        <span class="small muted"><del>Rp {{ number_format($hargaAwal, 0, ',', '.') }}</del></span>
+                    @if($item->harga_jual_kustom || $potItem > 0)
+                        <span class="small muted"><del>Rp {{ number_format($hargaNormal, 0, ',', '.') }}</del></span>
                         <span>Rp {{ number_format($hargaAkhir, 0, ',', '.') }}</span>
                         <span>x {{ $item->jumlah }}</span>
                     @else
-                        Rp {{ number_format($hargaAwal, 0, ',', '.') }} x {{ $item->jumlah }}
+                        Rp {{ number_format($hargaJual, 0, ',', '.') }} x {{ $item->jumlah }}
                     @endif
                 </td>
                 <td class="text-right">{{ number_format($item->line_total, 0, ',', '.') }}</td>

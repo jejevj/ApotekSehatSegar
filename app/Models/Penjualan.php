@@ -12,6 +12,8 @@ class Penjualan extends Model
     protected $fillable = [
         'kode_penjualan',
         'kode_barcode',
+        'harga_jual_kustom',
+        'user_id_pengubah',
         'jumlah',
         'total',
         'tgl_penjualan',
@@ -20,6 +22,11 @@ class Penjualan extends Model
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'kode_barcode', 'kode_barcode');
+    }
+
+    public function pengubah()
+    {
+        return $this->belongsTo(User::class, 'user_id_pengubah');
     }
 
     public function pelanggan()

@@ -229,7 +229,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary waves-effect">Cetak</button>
+                        <button type="submit" class="btn btn-primary waves-effect">Lihat Laporan</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Tutup</button>
                     </div>
                 </form>
