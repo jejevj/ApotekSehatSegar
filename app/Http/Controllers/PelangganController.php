@@ -53,11 +53,19 @@ class PelangganController extends Controller
     {
         $request->validate([
             'nama' => 'required',
+            'tipe' => 'required|in:umum,khusus',
             'alamat' => 'required',
             'telpon' => 'required',
         ]);
 
-        Pelanggan::create($request->all());
+        $pelanggan = Pelanggan::create($request->all());
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'pelanggan' => $pelanggan
+            ]);
+        }
 
         return redirect()->route('pelanggan.index')->with('success', 'Pelanggan berhasil ditambahkan');
     }

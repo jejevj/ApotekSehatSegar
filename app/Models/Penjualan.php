@@ -17,6 +17,8 @@ class Penjualan extends Model
         'jumlah',
         'total',
         'tgl_penjualan',
+        'id_pelanggan',
+        'id_user',
     ];
 
     public function barang()

@@ -44,9 +44,15 @@
             <td class="text-right">{{ $pelanggan->nama ?? '-' }}</td>
         </tr>
         <tr>
-            <td class="text-left">Ksr</td>
-            <td class="text-right">{{ $user->nama ?? '-' }}</td>
+            <td class="text-left">Kasir</td>
+            <td class="text-right">{{ $user->nama }}</td>
         </tr>
+        @if($pelanggan && $pelanggan->tipe !== 'umum')
+        <tr>
+            <td class="text-left">Pelanggan</td>
+            <td class="text-right">{{ $pelanggan->nama }}</td>
+        </tr>
+        @endif
         <tr>
             <td class="text-left">Bayar</td>
             <td class="text-right">{{ $metodePembayaranNama }}</td>

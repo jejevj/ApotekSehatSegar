@@ -125,7 +125,7 @@ class PenjualanController extends Controller
                 'jumlah' => $jumlah,
                 'total' => $total,
                 'tgl_penjualan' => $now->toDateString(),
-                'id_pelanggan' => 3, // Default Pelanggan Biasa
+                'id_pelanggan' => 1, // Default Pelanggan Umum
                 'id_user' => auth()->id(),
                 'diskon_tipe' => 'rupiah',
             ]);
@@ -169,7 +169,7 @@ class PenjualanController extends Controller
                 'jumlah' => $jumlah,
                 'total' => $total,
                 'tgl_penjualan' => $now->toDateString(),
-                'id_pelanggan' => 3, // Default Pelanggan Biasa
+                'id_pelanggan' => 1, // Default Pelanggan Umum
                 'id_user' => auth()->id(),
                 'diskon_tipe' => 'rupiah',
             ]);

@@ -42,13 +42,22 @@
                     <div class="row clearfix">
                         <div class="col-md-3">
                             <label>Pelanggan</label>
-                            <select name="id_pelanggan" class="form-control show-tick" data-container="body" style="border-radius: 5px;">
-                                @foreach($pelanggan as $p)
-                                    <option value="{{ $p->kode_pelanggan }}" {{ $p->kode_pelanggan == 3 ? 'selected' : '' }}>
-                                        {{ $p->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <div class="form-line">
+                                    <select name="id_pelanggan" id="id_pelanggan" class="form-control show-tick" data-container="body">
+                                        @foreach($pelanggan as $p)
+                                            <option value="{{ $p->kode_pelanggan }}" {{ $p->kode_pelanggan == 1 ? 'selected' : '' }}>
+                                                {{ $p->nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <span class="input-group-addon">
+                                    <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#addPelangganModal">
+                                        <i class="material-icons">person_add</i>
+                                    </button>
+                                </span>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <label>Metode Pembayaran</label>
@@ -436,7 +445,52 @@
         });
 
         // Inline editing for quantity and discount
-        $('.item-update').on('blur', function() {
+        // Save Pelanggan AJAX
+        $('#btn-save-pelanggan').on('click', function() {
+            var formData = {
+                _token: '{{ csrf_token() }}',
+                nama: $('#new_nama').val(),
+                tipe: $('input[name="tipe"]:checked').val(),
+                telpon: $('#new_telpon').val(),
+                alamat: $('#new_alamat').val()
+            };
+
+            if (!formData.nama) {
+                swal("Error", "Nama tidak boleh kosong", "error");
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route("pelanggan.store") }}',
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        var newOption = new Option(response.pelanggan.nama, response.pelanggan.kode_pelanggan, true, true);
+                        $('#id_pelanggan').append(newOption).trigger('change');
+                        $('#id_pelanggan').selectpicker('refresh');
+                        $('#addPelangganModal').modal('hide');
+                        
+                        // Reset form
+                        $('#new_nama').val('');
+                        $('#tipe_umum').prop('checked', true);
+                        $('#new_telpon').val('-');
+                        $('#new_alamat').val('-');
+                        
+                        swal("Berhasil", "Pelanggan baru berhasil ditambahkan", "success");
+                    }
+                },
+                error: function(xhr) {
+                    var errorMsg = "Terjadi kesalahan";
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMsg = Object.values(xhr.responseJSON.errors).join('\n');
+                    }
+                    swal("Error", errorMsg, "error");
+                }
+            });
+        });
+
+        $('.item-update').on('change', function() {
             var id = $(this).data('id');
             var field = $(this).data('field');
             var value = $(this).val();
@@ -479,6 +533,53 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">BATAL</button>
                 <button type="button" class="btn btn-primary waves-effect" id="confirmYes">YA</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Pelanggan Modal -->
+<div class="modal fade" id="addPelangganModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Tambah Pelanggan Baru</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-pelanggan">
+                    <label for="new_nama">Nama Pelanggan / Instansi</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            <input type="text" id="new_nama" name="nama" class="form-control" required placeholder="Masukkan Nama atau Nama Bagian/Sub Bagian">
+                        </div>
+                    </div>
+
+                    <label>Tipe Pelanggan</label>
+                    <div class="form-group">
+                        <input name="tipe" type="radio" id="tipe_umum" value="umum" class="with-gap radio-col-blue" checked />
+                        <label for="tipe_umum">Umum (Biasa)</label>
+                        <input name="tipe" type="radio" id="tipe_khusus" value="khusus" class="with-gap radio-col-red" />
+                        <label for="tipe_khusus">Khusus (Instansi/Sub Bagian)</label>
+                    </div>
+
+                    <label for="new_telpon">No. Telepon</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            <input type="text" id="new_telpon" name="telpon" class="form-control" placeholder="Masukkan Nomor Telepon" value="-">
+                        </div>
+                    </div>
+
+                    <label for="new_alamat">Alamat</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            <textarea id="new_alamat" name="alamat" rows="2" class="form-control no-resize" placeholder="Masukkan Alamat">-</textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-save-pelanggan" class="btn btn-primary waves-effect">Simpan</button>
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
