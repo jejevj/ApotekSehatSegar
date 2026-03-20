@@ -30,6 +30,23 @@ class BarangController extends Controller
         $barangs = Barang::with(['rak', 'category']);
         return DataTables::of($barangs)
             ->addIndexColumn()
+            ->addColumn('nama_barang_formatted', function ($barang) {
+                $warnings = [];
+                if ($barang->category_id == 1) { // ID 1 = Belum Memiliki Kategori
+                    $warnings[] = 'Belum memiliki kategori';
+                }
+                if (is_null($barang->rak_id)) {
+                    $warnings[] = 'Belum memiliki rak';
+                }
+
+                $warningHtml = '';
+                if (!empty($warnings)) {
+                    $warningText = implode(', ', $warnings);
+                    $warningHtml = ' <i class="material-icons text-danger" style="font-size: 16px; vertical-align: middle;" title="' . $warningText . '">warning</i>';
+                }
+
+                return $barang->nama_barang . $warningHtml;
+            })
             ->addColumn('nama_kategori', function ($barang) {
                 return $barang->category->nama_kategori;
             })
@@ -49,7 +66,7 @@ class BarangController extends Controller
                 }
                 return $buttons;
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['nama_barang_formatted', 'aksi'])
             ->make(true);
     }
 

@@ -48,7 +48,7 @@ $(function() {
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { data: 'kode_barcode', name: 'kode_barcode' },
-            { data: 'nama_barang', name: 'nama_barang' },
+            { data: 'nama_barang_formatted', name: 'nama_barang' },
             { data: 'nama_kategori', name: 'nama_kategori', searchable: false },
             { data: 'satuan', name: 'satuan' },
             { data: 'nama_lokasi_rak', name: 'nama_lokasi_rak', searchable: false },
