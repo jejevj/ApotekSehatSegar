@@ -177,6 +177,17 @@
                                                             <input type="number" name="pajak_persen" id="pajak_persen" class="form-control text-right" value="0" min="0" max="100" onkeyup="hitung()">
                                                             <span class="input-group-addon">%</span>
                                                         </div>
+                                                        <div class="form-group" style="margin-bottom: 5px;">
+                                                            <div class="form-line">
+                                                                <input type="text" name="pajak_keterangan" id="pajak_keterangan" class="form-control" placeholder="Ket. Pajak (ex: PPN)">
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 5px;">
+                                                            <input name="pajak_ditanggung" type="radio" id="pajak_toko" value="toko" class="with-gap radio-col-blue" onchange="hitung()" checked />
+                                                            <label for="pajak_toko">Toko</label>
+                                                            <input name="pajak_ditanggung" type="radio" id="pajak_pembeli" value="pembeli" class="with-gap radio-col-red" onchange="hitung()" />
+                                                            <label for="pajak_pembeli">Pembeli</label>
+                                                        </div>
                                                         <div class="input-group" style="margin-bottom: 0;">
                                                             <span class="input-group-addon">Rp</span>
                                                             <input type="text" name="pajak_nominal" id="pajak_nominal" class="form-control text-right" value="0" readonly style="background-color: #eee;">
@@ -262,9 +273,16 @@
 
         var pajakAktif = document.getElementById('pajak_aktif') ? document.getElementById('pajak_aktif').checked : false;
         var pajakPersen = parseInt(document.getElementById('pajak_persen') ? document.getElementById('pajak_persen').value : 0) || 0;
+        var pajakDitanggung = $('input[name="pajak_ditanggung"]:checked').val() || 'toko';
+
         if (document.getElementById('pajak_persen')) {
             document.getElementById('pajak_persen').disabled = !pajakAktif;
         }
+        if (document.getElementById('pajak_keterangan')) {
+            document.getElementById('pajak_keterangan').disabled = !pajakAktif;
+        }
+        $('input[name="pajak_ditanggung"]').prop('disabled', !pajakAktif);
+
         if (!pajakAktif) {
             pajakPersen = 0;
             if (document.getElementById('pajak_persen')) {
@@ -276,7 +294,9 @@
             document.getElementById('pajak_nominal').value = pajakNominal;
         }
 
-        var totalAkhir = sub_total + pajakNominal;
+        // Total akhir dipengaruhi siapa yang menanggung pajak
+        var totalAkhir = (pajakAktif && pajakDitanggung === 'pembeli') ? (sub_total + pajakNominal) : sub_total;
+        
         if (document.getElementById('total_akhir')) {
             document.getElementById('total_akhir').value = totalAkhir;
         }

@@ -148,9 +148,15 @@
                                 </tr>
                                 @if($pajakNominal > 0)
                                     <tr>
-                                        <th class="text-right">Pajak</th>
+                                        <th class="text-right">Pajak ({{ $detail->pajak_persen }}%) {{ $detail->pajak_keterangan ? '['.$detail->pajak_keterangan.']' : '' }}</th>
                                         <td class="text-right">Rp {{ number_format((int) $pajakNominal, 0, ',', '.') }}</td>
                                     </tr>
+                                    @if(($detail->pajak_ditanggung ?? 'pembeli') === 'toko')
+                                        <tr>
+                                            <th class="text-right text-muted" style="font-weight: normal;"><i>(Ditanggung Toko)</i></th>
+                                            <td class="text-right text-muted"><i>- Rp {{ number_format((int) $pajakNominal, 0, ',', '.') }}</i></td>
+                                        </tr>
+                                    @endif
                                     <tr>
                                         <th class="text-right">Total Akhir</th>
                                         <td class="text-right"><strong>Rp {{ number_format((int) $totalAkhir, 0, ',', '.') }}</strong></td>

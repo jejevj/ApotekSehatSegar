@@ -297,14 +297,17 @@ class PenjualanController extends Controller
 
         $pajakAktif = (int) ($request->pajak_aktif ?? 0) === 1;
         $pajakPersen = $pajakAktif ? (int) ($request->pajak_persen ?? 0) : 0;
-        if ($pajakPersen < 0) {
-            $pajakPersen = 0;
-        }
-        if ($pajakPersen > 100) {
-            $pajakPersen = 100;
-        }
+        $pajakKeterangan = $pajakAktif ? $request->pajak_keterangan : null;
+        $pajakDitanggung = $pajakAktif ? ($request->pajak_ditanggung ?? 'pembeli') : 'pembeli';
+
+        if ($pajakPersen < 0) $pajakPersen = 0;
+        if ($pajakPersen > 100) $pajakPersen = 100;
+
         $pajakNominal = (int) round(($subTotal * $pajakPersen) / 100);
-        $totalAkhir = $subTotal + $pajakNominal;
+        
+        // Jika pajak ditanggung toko, maka total akhir tetap subTotal
+        // Jika ditanggung pembeli, tambahkan pajak ke total akhir
+        $totalAkhir = ($pajakDitanggung === 'pembeli') ? ($subTotal + $pajakNominal) : $subTotal;
 
         $bayar = (int) ($request->bayar ?? 0);
         if ($bayar < 0) {
@@ -337,6 +340,8 @@ class PenjualanController extends Controller
                 'potongan' => $diskonGlobal,
                 'pajak_persen' => $pajakPersen,
                 'pajak_nominal' => $pajakNominal,
+                'pajak_keterangan' => $pajakKeterangan,
+                'pajak_ditanggung' => $pajakDitanggung,
                 'total' => $totalDb,
                 'total_akhir' => $totalAkhir,
                 'metode_pembayaran_id' => $metodePembayaranId,
@@ -451,6 +456,8 @@ class PenjualanController extends Controller
                 'pd.potongan as potongan_global',
                 'pd.pajak_persen',
                 'pd.pajak_nominal',
+                'pd.pajak_keterangan',
+                'pd.pajak_ditanggung',
                 'pd.total as total_global',
                 'pd.total_akhir'
             )

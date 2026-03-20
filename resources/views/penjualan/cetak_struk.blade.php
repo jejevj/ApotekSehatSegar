@@ -56,7 +56,17 @@
     <hr>
 
     <table>
-        @php $total_bayar = 0; $diskon = 0; $bayar = 0; $kembali = 0; $pajakNominal = 0; $totalAkhir = 0; @endphp
+        @php 
+            $total_bayar = 0; 
+            $diskon = 0; 
+            $bayar = 0; 
+            $kembali = 0; 
+            $pajakNominal = 0; 
+            $totalAkhir = 0; 
+            $pajakPersen = 0;
+            $pajakKeterangan = '';
+            $pajakDitanggung = 'pembeli';
+        @endphp
         @foreach($items as $item)
             @php
                 $hargaNormal = (int) ($item->harga_jual ?? 0);
@@ -86,6 +96,9 @@
                 $kembali = $item->kembali;
                 $pajakNominal = (int) ($item->pajak_nominal ?? 0);
                 $totalAkhir = (int) ($item->total_akhir ?? 0);
+                $pajakPersen = (int) ($item->pajak_persen ?? 0);
+                $pajakKeterangan = $item->pajak_keterangan ?? '';
+                $pajakDitanggung = $item->pajak_ditanggung ?? 'pembeli';
             @endphp
         @endforeach
     </table>
@@ -107,9 +120,15 @@
         </tr>
         @if($pajakNominal > 0)
             <tr>
-                <td class="text-left">Pajak</td>
+                <td class="text-left">Pajak ({{ $pajakPersen }}%) {{ $pajakKeterangan ? '['.$pajakKeterangan.']' : '' }}</td>
                 <td class="text-right">Rp {{ number_format($pajakNominal, 0, ',', '.') }}</td>
             </tr>
+            @if($pajakDitanggung === 'toko')
+                <tr>
+                    <td class="text-left small muted"><i>(Ditanggung Toko)</i></td>
+                    <td class="text-right small muted"><i>- Rp {{ number_format($pajakNominal, 0, ',', '.') }}</i></td>
+                </tr>
+            @endif
             <tr>
                 <td class="text-left"><strong>Total Akhir</strong></td>
                 <td class="text-right"><strong>{{ number_format($totalAkhir, 0, ',', '.') }}</strong></td>
@@ -124,6 +143,25 @@
             <td class="text-right">{{ number_format($kembali, 0, ',', '.') }}</td>
         </tr>
     </table>
+
+    @if($pajakNominal > 0 && $pajakDitanggung === 'pembeli')
+        <hr>
+        <div class="text-center"><strong>FAKTUR PAJAK</strong></div>
+        <table class="small">
+            <tr>
+                <td width="40%">DPP (Dasar Pengenaan Pajak)</td>
+                <td class="text-right">Rp {{ number_format($total_bayar - (int) $diskon, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>{{ $pajakKeterangan ?: 'PPN' }} ({{ $pajakPersen }}%)</td>
+                <td class="text-right">Rp {{ number_format($pajakNominal, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td><strong>TOTAL TAGIHAN</strong></td>
+                <td class="text-right"><strong>Rp {{ number_format($totalAkhir, 0, ',', '.') }}</strong></td>
+            </tr>
+        </table>
+    @endif
 
     <hr>
 
