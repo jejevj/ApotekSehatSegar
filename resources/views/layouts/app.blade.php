@@ -130,6 +130,11 @@
                                     continue;
                                 }
 
+                                // Sembunyikan menu billing jika user bukan admin atau super_admin
+                                if ($menu->route_name === 'billing.index' && !in_array(auth()->user()->role->slug, ['admin', 'super_admin'])) {
+                                    continue;
+                                }
+
                                 $isActive = false;
                                 if ($menu->route_name) {
                                     $isActive = request()->routeIs($menu->route_name . '*');
