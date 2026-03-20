@@ -54,9 +54,16 @@ class UnitController extends Controller
             'nama' => 'required|unique:units,nama',
         ]);
 
-        Unit::create([
+        $unit = Unit::create([
             'nama' => $request->nama,
         ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'unit' => $unit
+            ]);
+        }
 
         return redirect()->route('unit.index')->with('success', 'Satuan berhasil ditambahkan');
     }

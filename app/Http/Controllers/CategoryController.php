@@ -55,11 +55,18 @@ class CategoryController extends Controller
             'nama_kategori' => 'required|unique:categories,nama_kategori',
         ]);
 
-        Category::create([
+        $category = Category::create([
             'nama_kategori' => $request->nama_kategori,
             'slug' => Str::slug($request->nama_kategori),
             'keterangan' => $request->keterangan,
         ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'category' => $category
+            ]);
+        }
 
         return redirect()->route('category.index')->with('success', 'Kategori berhasil ditambahkan');
     }
