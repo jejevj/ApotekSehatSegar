@@ -28,6 +28,8 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
     Route::get('/summary-data', [HomeController::class, 'summaryData'])->name('summary.data');
     Route::get('/chart-data', [HomeController::class, 'chartData'])->name('chart.data');
+    Route::get('/category-chart-data', [HomeController::class, 'categoryChartData'])->name('category.chart.data');
+    Route::get('/top-products-data', [HomeController::class, 'topProductsData'])->name('top.products.data');
     Route::get('/transaction-data', [HomeController::class, 'transactionData'])->name('transaction.data');
 
     // Setting Aplikasi

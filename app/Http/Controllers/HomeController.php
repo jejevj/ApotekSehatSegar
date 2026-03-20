@@ -147,4 +147,36 @@ class HomeController extends Controller
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
+    public function categoryChartData(Request $request)
+    {
+        [$startDate, $endDate] = $this->getDateRange($request);
+
+        $data = DB::table('tb_penjualan as p')
+            ->join('tb_barang as b', 'p.kode_barcode', '=', 'b.kode_barcode')
+            ->join('categories as c', 'b.category_id', '=', 'c.id')
+            ->select('c.nama_kategori', DB::raw('SUM(p.jumlah) as total_terjual'))
+            ->whereBetween('p.tgl_penjualan', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->groupBy('c.nama_kategori')
+            ->orderBy('total_terjual', 'desc')
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function topProductsData(Request $request)
+    {
+        [$startDate, $endDate] = $this->getDateRange($request);
+
+        $data = DB::table('tb_penjualan as p')
+            ->join('tb_barang as b', 'p.kode_barcode', '=', 'b.kode_barcode')
+            ->select('b.nama_barang', DB::raw('SUM(p.jumlah) as total_terjual'))
+            ->whereBetween('p.tgl_penjualan', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->groupBy('b.nama_barang')
+            ->orderBy('total_terjual', 'desc')
+            ->limit(10)
+            ->get();
+
+        return response()->json($data);
+    }
 }

@@ -135,29 +135,23 @@
     </div>
     <!-- #END# Widgets -->
 
-    <!-- Chart -->
     <div class="row clearfix">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="header">
-                    <h2>GRAFIK PENJUALAN</h2>
+                    <h2><a href="#transactionCardBody" data-toggle="collapse">DATA TRANSAKSI TERAKHIR</a></h2>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i>
+                            </a>
+                            <ul class="dropdown-menu pull-right">
+                                <li><a href="#transactionCardBody" data-toggle="collapse">Toggle</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
-                <div class="body">
-                    <canvas id="salesChart" height="100"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- #END# Chart -->
-
-    <!-- Transaction Table -->
-    <div class="row clearfix">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="card">
-                <div class="header">
-                    <h2>DATA TRANSAKSI</h2>
-                </div>
-                <div class="body">
+                <div class="body collapse in" id="transactionCardBody">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover dataTable js-transaction-table">
                             <thead>
@@ -165,7 +159,7 @@
                                     <th width="5%">No</th>
                                     <th>Kode Penjualan</th>
                                     <th>Waktu Transaksi</th>
-                                    <th>Total Pendapatan</th>
+                                    <th>Total</th>
                                     <th width="10%">Aksi</th>
                                 </tr>
                             </thead>
@@ -176,7 +170,84 @@
             </div>
         </div>
     </div>
-    <!-- #END# Transaction Table -->
+
+    <!-- Charts -->
+    <div class="row clearfix">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="header">
+                    <h2><a href="#salesChartCardBody" data-toggle="collapse">GRAFIK PENJUALAN</a></h2>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i>
+                            </a>
+                            <ul class="dropdown-menu pull-right">
+                                <li><a href="#salesChartCardBody" data-toggle="collapse">Toggle</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body collapse in" id="salesChartCardBody">
+                    <canvas id="salesChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="card">
+                <div class="header">
+                    <h2><a href="#categorySalesChartCardBody" data-toggle="collapse">PENJUALAN PER KATEGORI</a></h2>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i>
+                            </a>
+                            <ul class="dropdown-menu pull-right">
+                                <li><a href="#categorySalesChartCardBody" data-toggle="collapse">Toggle</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body collapse in" id="categorySalesChartCardBody">
+                    <canvas id="categorySalesChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="card">
+                <div class="header">
+                    <h2><a href="#topProductsCardBody" data-toggle="collapse">TOP 10 PRODUK TERLARIS</a></h2>
+                    <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i>
+                            </a>
+                            <ul class="dropdown-menu pull-right">
+                                <li><a href="#topProductsCardBody" data-toggle="collapse">Toggle</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body collapse in" id="topProductsCardBody">
+                    <div class="table-responsive">
+                        <table class="table table-hover dashboard-task-infos">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nama Produk</th>
+                                    <th>Jumlah Terjual</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProductsTableBody">
+                                <!-- Data will be loaded here by AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #END# Charts -->
 </div>
 @endsection
 
@@ -184,7 +255,11 @@
 <script src="{{ asset('plugins/chartjs/Chart.bundle.js') }}"></script>
 <script>
 $(function () {
-    let salesChart = null;
+    let salesChart, categorySalesChart;
+
+    function formatCurrency(value) {
+        return 'Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 
     function loadSummaryData(filter, startDate = null, endDate = null) {
         let url = '{{ route("summary.data") }}?filter=' + filter;
@@ -199,8 +274,8 @@ $(function () {
                 $('#valBarangTerjual').text(response.barang_terjual.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")).attr('title', response.barang_terjual.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
                 $('#valPelangganAktif').text(response.pelanggan_aktif.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")).attr('title', response.pelanggan_aktif.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
                 $('#valTransaksi').text(response.transaksi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")).attr('title', response.transaksi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
-                $('#valPendapatan').text('Rp ' + response.pendapatan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")).attr('title', 'Rp ' + response.pendapatan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
-                $('#valKeuntungan').text('Rp ' + response.keuntungan_bersih.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")).attr('title', 'Rp ' + response.keuntungan_bersih.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                $('#valPendapatan').text(formatCurrency(response.pendapatan)).attr('title', formatCurrency(response.pendapatan));
+                $('#valKeuntungan').text(formatCurrency(response.keuntungan_bersih)).attr('title', formatCurrency(response.keuntungan_bersih));
             }
         });
     }
@@ -215,18 +290,44 @@ $(function () {
             url: url,
             type: 'GET',
             success: function (response) {
-                renderChart(response.labels, response.pendapatan, response.transaksi);
+                renderSalesChart(response.labels, response.pendapatan, response.transaksi);
             }
         });
     }
 
-    function renderChart(labels, dataPendapatan, dataTransaksi) {
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        
-        if (salesChart) {
-            salesChart.destroy();
+    function loadCategoryChartData(filter, startDate = null, endDate = null) {
+        let url = '{{ route("category.chart.data") }}?filter=' + filter;
+        if (filter === 'custom' && startDate && endDate) {
+            url += '&start_date=' + startDate + '&end_date=' + endDate;
         }
 
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                renderCategoryChart(response);
+            }
+        });
+    }
+
+    function loadTopProductsData(filter, startDate = null, endDate = null) {
+        let url = '{{ route("top.products.data") }}?filter=' + filter;
+        if (filter === 'custom' && startDate && endDate) {
+            url += '&start_date=' + startDate + '&end_date=' + endDate;
+        }
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                renderTopProductsTable(response);
+            }
+        });
+    }
+
+    function renderSalesChart(labels, dataPendapatan, dataTransaksi) {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        if (salesChart) salesChart.destroy();
         salesChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -262,11 +363,9 @@ $(function () {
                     callbacks: {
                         label: function(tooltipItem, data) {
                             let label = data.datasets[tooltipItem.datasetIndex].label || '';
-                            if (label) {
-                                label += ': ';
-                            }
+                            if (label) label += ': ';
                             if (tooltipItem.datasetIndex === 0) {
-                                label += 'Rp ' + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                label += formatCurrency(tooltipItem.yLabel);
                             } else {
                                 label += tooltipItem.yLabel;
                             }
@@ -277,33 +376,13 @@ $(function () {
                 scales: {
                     yAxes: [
                         {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            id: 'y-axis-1',
-                            ticks: {
-                                beginAtZero: true,
-                                callback: function(value, index, values) {
-                                    if(parseInt(value) >= 1000){
-                                        return 'Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                                    } else {
-                                        return 'Rp ' + value;
-                                    }
-                                }
-                            }
+                            type: 'linear', display: true, position: 'left', id: 'y-axis-1',
+                            ticks: { beginAtZero: true, callback: function(value) { return formatCurrency(value); } }
                         },
                         {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            id: 'y-axis-2',
-                            gridLines: {
-                                drawOnChartArea: false,
-                            },
-                            ticks: {
-                                beginAtZero: true,
-                                stepSize: 1
-                            }
+                            type: 'linear', display: true, position: 'right', id: 'y-axis-2',
+                            gridLines: { drawOnChartArea: false },
+                            ticks: { beginAtZero: true, stepSize: 1 }
                         }
                     ]
                 }
@@ -311,12 +390,76 @@ $(function () {
         });
     }
 
+    function renderCategoryChart(data) {
+        const ctx = document.getElementById('categorySalesChart').getContext('2d');
+        const labels = data.map(item => item.nama_kategori);
+        const values = data.map(item => item.total_terjual);
+
+        if (categorySalesChart) categorySalesChart.destroy();
+        categorySalesChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+                        '#E7E9ED', '#7AC142', '#F44336', '#2196F3'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: { position: 'bottom' },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            let label = data.labels[tooltipItem.index] || '';
+                            let value = data.datasets[0].data[tooltipItem.index];
+                            let total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            let percentage = total > 0 ? ((value / total) * 100).toFixed(2) : 0;
+                            return ` ${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderTopProductsTable(data) {
+        const tableBody = $('#topProductsTableBody');
+        tableBody.empty();
+        if (data.length > 0) {
+            data.forEach((item, index) => {
+                tableBody.append(`
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.nama_barang}</td>
+                        <td><span class="badge bg-green">${item.total_terjual}</span></td>
+                    </tr>
+                `);
+            });
+        } else {
+            tableBody.append('<tr><td colspan="3" class="text-center">Tidak ada data</td></tr>');
+        }
+    }
+
+    function loadAllData(filter, startDate = null, endDate = null) {
+        loadSummaryData(filter, startDate, endDate);
+        loadChartData(filter, startDate, endDate);
+        loadCategoryChartData(filter, startDate, endDate);
+        loadTopProductsData(filter, startDate, endDate);
+        if ($.fn.DataTable.isDataTable('.js-transaction-table')) {
+            $('.js-transaction-table').DataTable().ajax.reload();
+        }
+    }
+
     // Initial load
-    loadSummaryData('today');
-    loadChartData('today');
+    loadAllData('today');
 
     // DataTable Initialization
-    let transactionTable = $('.js-transaction-table').DataTable({
+    $('.js-transaction-table').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -345,9 +488,7 @@ $(function () {
             $('#customDateRange').slideDown();
         } else {
             $('#customDateRange').slideUp();
-            loadSummaryData(filter);
-            loadChartData(filter);
-            transactionTable.ajax.reload();
+            loadAllData(filter);
         }
     });
 
@@ -356,9 +497,7 @@ $(function () {
         const start = $('#startDate').val();
         const end = $('#endDate').val();
         if (start && end) {
-            loadSummaryData('custom', start, end);
-            loadChartData('custom', start, end);
-            transactionTable.ajax.reload();
+            loadAllData('custom', start, end);
         } else {
             alert('Pilih rentang tanggal terlebih dahulu');
         }
