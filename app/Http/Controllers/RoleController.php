@@ -49,15 +49,15 @@ class RoleController extends Controller
 
     public function create()
     {
-        $permissions = Permission::all()->groupBy('feature');
-        return view('role.create', compact('permissions'));
+        $features = Permission::select('feature')->distinct()->pluck('feature')->toArray();
+        return view('role.create', compact('features'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|unique:roles,name',
-            'permissions' => 'required|array'
+            'permissions' => 'nullable|array'
         ]);
 
         $role = Role::create([
@@ -65,7 +65,9 @@ class RoleController extends Controller
             'slug' => Str::slug($request->name),
         ]);
 
-        $role->permissions()->sync($request->permissions);
+        if ($request->has('permissions')) {
+            $role->permissions()->sync($request->permissions);
+        }
         $this->syncMenusForRole($role);
 
         return redirect()->route('role.index')->with('success', 'Role berhasil ditambahkan');
@@ -74,9 +76,39 @@ class RoleController extends Controller
     public function edit($id)
     {
         $role = Role::with('permissions')->findOrFail($id);
-        $permissions = Permission::all()->groupBy('feature');
-        $rolePermissions = $role->permissions->pluck('id')->toArray();
-        return view('role.edit', compact('role', 'permissions', 'rolePermissions'));
+        $features = Permission::select('feature')->distinct()->pluck('feature')->toArray();
+        return view('role.edit', compact('role', 'features'));
+    }
+
+    public function permissionData(Request $request, $id = null)
+    {
+        $rolePermissions = [];
+        if ($id) {
+            $role = Role::with('permissions')->find($id);
+            if ($role) {
+                $rolePermissions = $role->permissions->pluck('id')->toArray();
+            }
+        }
+
+        $permissions = Permission::query();
+        if ($request->has('feature') && !empty($request->feature)) {
+            $permissions->where('feature', $request->feature);
+        }
+
+        return DataTables::of($permissions)
+            ->addIndexColumn()
+            ->addColumn('checkbox', function ($perm) use ($rolePermissions) {
+                $checked = in_array($perm->id, $rolePermissions) ? 'checked' : '';
+                return '<div class="demo-checkbox">
+                            <input type="checkbox" id="perm_' . $perm->id . '" name="permissions[]" value="' . $perm->id . '" class="filled-in chk-col-pink perm-checkbox" ' . $checked . '>
+                            <label for="perm_' . $perm->id . '"></label>
+                        </div>';
+            })
+            ->editColumn('feature', function ($perm) {
+                return strtoupper($perm->feature);
+            })
+            ->rawColumns(['checkbox'])
+            ->make(true);
     }
 
     public function update(Request $request, $id)

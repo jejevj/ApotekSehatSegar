@@ -15,6 +15,7 @@ class Barang extends Model
     protected $fillable = [
         'kode_barcode',
         'nama_barang',
+        'category_id',
         'unit_id',
         'rak_id',
         'isi',
@@ -24,6 +25,13 @@ class Barang extends Model
         'harga_jual',
         'profit',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id')->withDefault([
+            'nama_kategori' => 'Belum Memiliki Kategori'
+        ]);
+    }
 
     public function unit()
     {

@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\RakController;
 use App\Http\Controllers\BillingSettingController;
 use App\Http\Controllers\MetodePembayaranController;
@@ -49,6 +50,21 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
         Route::put('unit/{unit}', [UnitController::class, 'update'])->name('unit.update');
     });
     Route::middleware('permission:unit.delete')->delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+
+    // Kategori Barang
+    Route::middleware('permission:category.create')->group(function () {
+        Route::get('category/create', [CategoryController::class, 'create'])->name('category.create');
+        Route::post('category', [CategoryController::class, 'store'])->name('category.store');
+    });
+    Route::middleware('permission:category.view')->group(function () {
+        Route::get('category/data', [CategoryController::class, 'data'])->name('category.data');
+        Route::get('category', [CategoryController::class, 'index'])->name('category.index');
+    });
+    Route::middleware('permission:category.update')->group(function () {
+        Route::get('category/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
+        Route::put('category/{category}', [CategoryController::class, 'update'])->name('category.update');
+    });
+    Route::middleware('permission:category.delete')->delete('category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
     // Rak Barang (Lokasi & Rak)
     Route::middleware('permission:rak.create')->group(function () {
@@ -203,10 +219,20 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
     Route::middleware('permission:pengguna.delete')->delete('pengguna/{pengguna}', [PenggunaController::class, 'destroy'])->name('pengguna.destroy');
 
     // Role Management
-    Route::middleware('permission:pengguna.view')->group(function () {
-        Route::get('role/data', [RoleController::class, 'data'])->name('role.data');
-        Route::resource('role', RoleController::class);
+    Route::middleware('permission:role.create')->group(function () {
+        Route::get('role/create', [RoleController::class, 'create'])->name('role.create');
+        Route::post('role', [RoleController::class, 'store'])->name('role.store');
     });
+    Route::middleware('permission:role.view')->group(function () {
+        Route::get('role/data', [RoleController::class, 'data'])->name('role.data');
+        Route::get('role/permission-data/{id?}', [RoleController::class, 'permissionData'])->name('role.permissionData');
+        Route::get('role', [RoleController::class, 'index'])->name('role.index');
+    });
+    Route::middleware('permission:role.update')->group(function () {
+        Route::get('role/{role}/edit', [RoleController::class, 'edit'])->name('role.edit');
+        Route::put('role/{role}', [RoleController::class, 'update'])->name('role.update');
+    });
+    Route::middleware('permission:role.delete')->delete('role/{role}', [RoleController::class, 'destroy'])->name('role.destroy');
 
     // Menu Management
     Route::middleware('permission:pengguna.view')->group(function () {

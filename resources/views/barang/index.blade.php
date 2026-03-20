@@ -18,6 +18,7 @@
                                 <th>No</th>
                                 <th>Barcode</th>
                                 <th>Nama Barang</th>
+                                <th>Kategori</th>
                                 <th>Satuan</th>
                                 <th>Lokasi & Rak</th>
                                 <th>Harga Beli</th>
@@ -48,6 +49,7 @@ $(function() {
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { data: 'kode_barcode', name: 'kode_barcode' },
             { data: 'nama_barang', name: 'nama_barang' },
+            { data: 'nama_kategori', name: 'nama_kategori', searchable: false },
             { data: 'satuan', name: 'satuan' },
             { data: 'nama_lokasi_rak', name: 'nama_lokasi_rak', searchable: false },
             { data: 'harga_beli', name: 'harga_beli' },

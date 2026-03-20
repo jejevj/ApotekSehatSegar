@@ -8,7 +8,7 @@
                 <h2>EDIT ROLE</h2>
             </div>
             <div class="body">
-                <form action="{{ route('role.update', $role->id) }}" method="POST">
+                <form id="role-form" action="{{ route('role.update', $role->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <label for="name">Nama Role</label>
@@ -18,33 +18,42 @@
                         </div>
                     </div>
 
-                    <label>Hak Akses (Permissions)</label>
-                    <div class="row clearfix">
-                        @foreach($permissions as $feature => $perms)
-                        <div class="col-md-3">
-                            <div class="card" style="box-shadow: none; border: 1px solid #eee;">
-                                <div class="header" style="padding: 10px;">
-                                    <h4 style="margin:0; font-size: 14px;">{{ strtoupper($feature) }}</h4>
-                                </div>
-                                <div class="body" style="padding: 10px;">
-                                    <div class="row">
-                                        @foreach($perms as $perm)
-                                        <div class="col-md-12">
-                                            <div class="demo-checkbox">
-                                                <input type="checkbox" id="perm_{{ $perm->id }}" name="permissions[]" value="{{ $perm->id }}" class="filled-in chk-col-pink" {{ in_array($perm->id, $rolePermissions) ? 'checked' : '' }}>
-                                                <label for="perm_{{ $perm->id }}">{{ $perm->name }}</label>
-                                            </div>
-                                        </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="feature-filter">Filter Berdasarkan Fitur</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select id="feature-filter" class="form-control show-tick" data-container="body">
+                                        <option value="">-- Semua Fitur --</option>
+                                        @foreach($features as $feature)
+                                            <option value="{{ $feature }}">{{ strtoupper($feature) }}</option>
                                         @endforeach
-                                    </div>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
                     </div>
 
+                    <label>Hak Akses (Permissions)</label>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover dataTable" id="permission-table" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th width="5%"><input type="checkbox" id="check-all" class="filled-in chk-col-pink"><label for="check-all"></label></th>
+                                    <th width="5%">No</th>
+                                    <th>Feature</th>
+                                    <th>Permission Name</th>
+                                    <th>Slug</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div id="hidden-permissions"></div>
+
                     <div class="m-t-20">
-                        <input type="submit" value="Update" class="btn btn-primary waves-effect">
+                        <button type="submit" class="btn btn-primary waves-effect">Update</button>
                         <a href="{{ route('role.index') }}" class="btn btn-default waves-effect">Kembali</a>
                     </div>
                 </form>
@@ -53,3 +62,99 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(function() {
+    var selectedPermissions = {!! json_encode($role->permissions->pluck('id')->toArray()) !!};
+
+    var table = $('#permission-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('role.permissionData', $role->id) }}',
+            data: function (d) {
+                d.feature = $('#feature-filter').val();
+            }
+        },
+        pageLength: 25,
+        columns: [
+            { 
+                data: 'checkbox', 
+                name: 'checkbox', 
+                orderable: false, 
+                searchable: false,
+                render: function(data, type, row) {
+                    var isChecked = selectedPermissions.includes(row.id) ? 'checked' : '';
+                    return '<div class="demo-checkbox">' +
+                                '<input type="checkbox" id="perm_' + row.id + '" value="' + row.id + '" class="filled-in chk-col-pink perm-checkbox" ' + isChecked + '>' +
+                                '<label for="perm_' + row.id + '"></label>' +
+                            '</div>';
+                }
+            },
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+            { data: 'feature', name: 'feature' },
+            { data: 'name', name: 'name' },
+            { data: 'slug', name: 'slug' }
+        ],
+        drawCallback: function() {
+            updateCheckAllState();
+        }
+    });
+
+    // Handle filter change
+    $('#feature-filter').on('change', function() {
+        table.draw();
+    });
+
+    // Handle individual checkbox click
+    $('#permission-table').on('change', '.perm-checkbox', function() {
+        var id = parseInt($(this).val());
+        if ($(this).is(':checked')) {
+            if (!selectedPermissions.includes(id)) {
+                selectedPermissions.push(id);
+            }
+        } else {
+            selectedPermissions = selectedPermissions.filter(function(val) {
+                return val !== id;
+            });
+        }
+        updateCheckAllState();
+    });
+
+    // Handle "check all" checkbox click
+    $('#check-all').on('change', function() {
+        var isChecked = $(this).is(':checked');
+        $('.perm-checkbox').each(function() {
+            $(this).prop('checked', isChecked).trigger('change');
+        });
+    });
+
+    function updateCheckAllState() {
+        var allChecked = true;
+        var checkboxes = $('.perm-checkbox');
+        if (checkboxes.length === 0) {
+            allChecked = false;
+        } else {
+            checkboxes.each(function() {
+                if (!$(this).is(':checked')) {
+                    allChecked = false;
+                    return false;
+                }
+            });
+        }
+        $('#check-all').prop('checked', allChecked);
+    }
+
+    // On form submit, add selected permissions as hidden inputs
+    $('#role-form').on('submit', function() {
+        var container = $('#hidden-permissions');
+        container.empty();
+        selectedPermissions.forEach(function(id) {
+            container.append('<input type="hidden" name="permissions[]" value="' + id + '">');
+        });
+        return true;
+    });
+});
+</script>
+@endpush

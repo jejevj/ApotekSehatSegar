@@ -24,6 +24,18 @@
                         </div>
                     </div>
 
+                    <label for="category_id">Kategori</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            <select name="category_id" id="category_id" class="form-control show-tick" data-container="body" required>
+                                <option value="">-- Pilih Kategori --</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ $category->id == 1 ? 'selected' : '' }}>{{ $category->nama_kategori }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <label for="unit_id">Satuan</label>
