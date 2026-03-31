@@ -8,6 +8,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Models\User;
+use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Facades\Hash;
 
 class RolePermissionSeeder extends Seeder
@@ -17,11 +18,28 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Roles
-        $superAdminRole = Role::updateOrCreate(['name' => 'Super Admin'], ['slug' => 'super_admin']);
-        $adminRole = Role::updateOrCreate(['name' => 'Administrator'], ['slug' => 'admin']);
-        $kasirRole = Role::updateOrCreate(['name' => 'Kasir'], ['slug' => 'kasir']);
-        $billingRole = Role::updateOrCreate(['name' => 'Billing'], ['slug' => 'billing']);
+        // 1. Create Roles as global templates (store_id = null)
+        // Gunakan withoutGlobalScope agar TenantScope tidak memfilter query updateOrCreate
+        $superAdminRole = Role::withoutGlobalScope(TenantScope::class)
+            ->updateOrCreate(
+                ['slug' => 'super_admin', 'store_id' => null],
+                ['name' => 'Super Admin', 'store_id' => null]
+            );
+        $adminRole = Role::withoutGlobalScope(TenantScope::class)
+            ->updateOrCreate(
+                ['slug' => 'admin', 'store_id' => null],
+                ['name' => 'Administrator', 'store_id' => null]
+            );
+        $kasirRole = Role::withoutGlobalScope(TenantScope::class)
+            ->updateOrCreate(
+                ['slug' => 'kasir', 'store_id' => null],
+                ['name' => 'Kasir', 'store_id' => null]
+            );
+        $billingRole = Role::withoutGlobalScope(TenantScope::class)
+            ->updateOrCreate(
+                ['slug' => 'billing', 'store_id' => null],
+                ['name' => 'Billing', 'store_id' => null]
+            );
 
         // 2. Define Features and Actions
         $features = [
@@ -40,6 +58,10 @@ class RolePermissionSeeder extends Seeder
             'setting' => ['view', 'update'],
             'laporan' => ['view', 'print'],
             'billing' => ['manage'],
+            // FnB Module
+            'ingredients' => ['view', 'create', 'update', 'delete'],
+            'recipes' => ['view', 'create', 'update', 'delete'],
+            'hpp' => ['view'],
         ];
 
         $allPermissionIds = [];
@@ -87,7 +109,8 @@ class RolePermissionSeeder extends Seeder
         $kasirRole->permissions()->sync($kasirPermissions);
 
         // 5. Update Existing Users or Create Admin
-        $adminUser = User::where('level', 'admin')->first();
+        // Gunakan withoutGlobalScope agar query tidak terfilter TenantScope
+        $adminUser = User::withoutGlobalScopes()->where('level', 'admin')->first();
         if ($adminUser) {
             $adminUser->update(['role_id' => $adminRole->id]);
         } else {
@@ -102,7 +125,7 @@ class RolePermissionSeeder extends Seeder
 
         // Catatan: Penugasan user ke Super Admin dapat dilakukan via UI Pengguna.
 
-        $kasirUser = User::where('level', 'kasir')->first();
+        $kasirUser = User::withoutGlobalScopes()->where('level', 'kasir')->first();
         if ($kasirUser) {
             $kasirUser->update(['role_id' => $kasirRole->id]);
         }

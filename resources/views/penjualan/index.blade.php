@@ -18,7 +18,7 @@
                                 <th>No</th>
                                 <th>No. Nota</th>
                                 <th>Tanggal</th>
-                                <th>Pelanggan</th>
+                                <th>{{ label('customer') }}</th>
                                 <th>Total</th>
                                 <th>Kasir</th>
                                 <th>Aksi</th>

@@ -5,7 +5,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card" style="border-radius: 10px;">
             <div class="header">
-                <h2>TAMBAH BARANG</h2>
+                <h2>{{ 'TAMBAH ' . strtoupper(label('product')) }}</h2>
             </div>
             <div class="body">
                 <form action="{{ route('barang.store') }}" method="POST">
@@ -17,7 +17,7 @@
                         </div>
                     </div>
 
-                    <label for="nama_barang">Nama Barang</label>
+                    <label for="nama_barang">{{ 'Nama ' . label('product') }}</label>
                     <div class="form-group">
                         <div class="form-line">
                             <input type="text" name="nama_barang" class="form-control" placeholder="Masukkan Nama Barang" required />
@@ -61,7 +61,8 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="rak_id">Lokasi & Rak</label>
+                            @if($businessConfig->showProductLocation())
+                            <label for="rak_id">{{ label('location') }}</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <select name="rak_id" id="rak_id" class="form-control show-tick" data-container="body">
@@ -72,17 +73,20 @@
                                     </select>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12">
+                            @if($businessConfig->showProductContent())
                             <label for="isi">Isi (Opsional)</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="number" name="isi" id="isi" class="form-control" value="1" min="1" />
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
 

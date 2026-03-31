@@ -2,11 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTenantScope;
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Role extends Model
 {
-    protected $fillable = ['name', 'slug'];
+    use HasTenantScope;
+
+    protected $fillable = ['store_id', 'name', 'slug'];
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
 
     public function permissions()
     {

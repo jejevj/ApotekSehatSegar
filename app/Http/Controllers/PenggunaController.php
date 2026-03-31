@@ -25,7 +25,10 @@ class PenggunaController extends Controller
 
     public function data()
     {
-        $users = User::with('role')->select('users.*');
+        $storeId = auth()->user()->store_id;
+        $users = User::with('role')
+            ->where('store_id', $storeId)
+            ->select('users.*');
 
         return DataTables::of($users)
             ->addIndexColumn()
@@ -51,7 +54,13 @@ class PenggunaController extends Controller
 
     public function create()
     {
-        $roles = Role::all();
+        $storeId = auth()->user()->store_id;
+        $roles = Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)
+            ->where('slug', '!=', 'super_admin')
+            ->where(function ($q) use ($storeId) {
+                $q->whereNull('store_id')->orWhere('store_id', $storeId);
+            })
+            ->get();
         return view('pengguna.create', compact('roles'));
     }
 
@@ -66,16 +75,19 @@ class PenggunaController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $storeId = auth()->user()->store_id;
+
         // Batasi hanya 1 akun dengan role billing
-        $role = Role::find($validated['role_id']);
+        $role = Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)->find($validated['role_id']);
         if ($role && $role->slug === 'billing') {
-            $existing = User::where('role_id', $role->id)->count();
+            $existing = User::where('store_id', $storeId)->where('role_id', $role->id)->count();
             if ($existing >= 1) {
                 return redirect()->back()->withInput()->with('error', 'Akun billing sudah ada. Hanya boleh 1 akun billing.');
             }
         }
 
         $data = [
+            'store_id' => $storeId,
             'username' => $validated['username'],
             'nama' => $validated['nama'],
             'password' => Hash::make($validated['password']),
@@ -97,14 +109,21 @@ class PenggunaController extends Controller
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        $roles = Role::all();
+        $storeId = auth()->user()->store_id;
+        $user = User::where('store_id', $storeId)->findOrFail($id);
+        $roles = Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)
+            ->where('slug', '!=', 'super_admin')
+            ->where(function ($q) use ($storeId) {
+                $q->whereNull('store_id')->orWhere('store_id', $storeId);
+            })
+            ->get();
         return view('pengguna.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $storeId = auth()->user()->store_id;
+        $user = User::where('store_id', $storeId)->findOrFail($id);
 
         $validated = $request->validate([
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,
@@ -116,9 +135,9 @@ class PenggunaController extends Controller
         ]);
 
         // Batasi hanya 1 akun dengan role billing (kecuali user ini sendiri)
-        $role = Role::find($validated['role_id']);
+        $role = Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)->find($validated['role_id']);
         if ($role && $role->slug === 'billing') {
-            $existing = User::where('role_id', $role->id)->where('id', '<>', $user->id)->count();
+            $existing = User::where('store_id', $storeId)->where('role_id', $role->id)->where('id', '<>', $user->id)->count();
             if ($existing >= 1) {
                 return redirect()->back()->withInput()->with('error', 'Akun billing sudah ada. Hanya boleh 1 akun billing.');
             }
@@ -134,7 +153,6 @@ class PenggunaController extends Controller
         }
 
         if ($request->hasFile('foto')) {
-            // Hapus foto lama jika ada
             if ($user->foto && file_exists(public_path('images/' . $user->foto))) {
                 unlink(public_path('images/' . $user->foto));
             }
@@ -152,7 +170,8 @@ class PenggunaController extends Controller
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $storeId = auth()->user()->store_id;
+        $user = User::where('store_id', $storeId)->findOrFail($id);
 
         if (auth()->id() === $user->id) {
             return redirect()->route('pengguna.index')->with('error', 'Tidak bisa menghapus akun yang sedang digunakan');

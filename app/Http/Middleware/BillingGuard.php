@@ -13,11 +13,18 @@ class BillingGuard
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Bypass untuk super_admin
+        if (\App\Services\StoreContext::isSuperAdmin()) {
+            return $next($request);
+        }
+
         try {
-            $setting = BillingSetting::where('status', 'aktif')->orderBy('id', 'desc')->first();
+            $storeId = \App\Services\StoreContext::getStoreId();
+            $setting = BillingSetting::where('store_id', $storeId)->where('status', 'aktif')->orderBy('id', 'desc')->first();
             if (!$setting) {
-                $setting = BillingSetting::query()->orderBy('id', 'desc')->first();
+                $setting = BillingSetting::where('store_id', $storeId)->orderBy('id', 'desc')->first();
             }
+
             if (!$setting || empty($setting->expired_at) || $setting->status === 'sudah_dibayar') {
                 return $next($request);
             }

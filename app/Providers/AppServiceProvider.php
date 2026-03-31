@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\URL;
 use App\Models\Setting;
+use App\Services\BusinessConfigService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,7 +18,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(BusinessConfigService::class, function () {
+            return new BusinessConfigService();
+        });
     }
 
     /**
@@ -42,7 +45,17 @@ class AppServiceProvider extends ServiceProvider
 
         // Share settings to all views
         View::composer('*', function ($view) {
-            $view->with('setting', Setting::first());
+            try {
+                $setting = Setting::first() ?? Setting::withoutGlobalScopes()->first() ?? new Setting();
+            } catch (\Exception $e) {
+                $setting = new Setting();
+            }
+            $view->with('setting', $setting);
+        });
+
+        // Share businessConfig to all views
+        View::composer('*', function ($view) {
+            $view->with('businessConfig', app(BusinessConfigService::class));
         });
     }
 }

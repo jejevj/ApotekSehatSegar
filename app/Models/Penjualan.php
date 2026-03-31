@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTenantScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Penjualan extends Model
 {
+    use HasTenantScope;
+
     protected $table = 'tb_penjualan';
     public $timestamps = false;
 
     protected $fillable = [
+        'store_id',
         'kode_penjualan',
         'kode_barcode',
         'harga_jual_kustom',

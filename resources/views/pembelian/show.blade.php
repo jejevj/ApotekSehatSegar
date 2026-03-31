@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="block-header">
-        <h2>DETAIL BARANG MASUK</h2>
+        <h2>DETAIL {{ strtoupper(label('product')) }} MASUK</h2>
     </div>
 
     <div class="row clearfix">
@@ -19,7 +19,7 @@
                             {{ $pembelian->tanggal->translatedFormat('d F Y') }}
                         </div>
                         <div class="col-md-3">
-                            <strong>Distributor:</strong><br>
+                            <strong>{{ label('supplier') }}:</strong><br>
                             {{ $pembelian->distributor->nama ?? '-' }}
                         </div>
                         <div class="col-md-3">
@@ -45,14 +45,14 @@
                     </div>
                     @endif
 
-                    <h4 class="m-t-30">Daftar Barang</h4>
+                    <h4 class="m-t-30">Daftar {{ label('product') }}</h4>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th width="5%">No</th>
                                     <th>Kode Barcode</th>
-                                    <th>Nama Barang</th>
+                                    <th>Nama {{ label('product') }}</th>
                                     <th class="text-right">Harga Beli</th>
                                     <th class="text-center">Jumlah</th>
                                     <th class="text-right">Subtotal</th>

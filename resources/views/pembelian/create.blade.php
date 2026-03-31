@@ -7,14 +7,14 @@
 @section('content')
 <div class="container-fluid">
     <div class="block-header">
-        <h2>TAMBAH BARANG MASUK</h2>
+        <h2>TAMBAH {{ strtoupper(label('product')) }} MASUK</h2>
     </div>
 
     <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card">
                 <div class="header">
-                    <h2>FORM BARANG MASUK</h2>
+                    <h2>FORM {{ strtoupper(label('product')) }} MASUK</h2>
                 </div>
                 <div class="body">
                     <form action="{{ route('pembelian.store') }}" method="POST" enctype="multipart/form-data" id="formPembelian">
@@ -37,10 +37,10 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="distributor_id">Distributor / Agen</label>
+                                <label for="distributor_id">{{ label('supplier') }}</label>
                                 <div class="form-group">
                                     <select name="distributor_id" id="distributor_id" class="form-control show-tick" data-live-search="true" data-container="body" data-width="100%" data-dropup-auto="false" required>
-                                        <option value="">-- Pilih Distributor --</option>
+                                        <option value="">-- Pilih {{ label('supplier') }} --</option>
                                         @foreach($distributors as $dist)
                                             <option value="{{ $dist->id }}">{{ $dist->nama }}</option>
                                         @endforeach
@@ -49,12 +49,12 @@
                             </div>
                         </div>
 
-                        <h4 class="m-t-20 m-b-20">Daftar Barang</h4>
+                        <h4 class="m-t-20 m-b-20">Daftar {{ label('product') }}</h4>
                         
                         <div class="row clearfix m-b-20">
                             <div class="col-md-6">
                                 <select id="pilih_barang" class="form-control show-tick" data-live-search="true" data-container="body" data-width="100%" data-dropup-auto="false">
-                                    <option value="">-- Cari Barang untuk Ditambahkan --</option>
+                                    <option value="">-- Cari {{ label('product') }} untuk Ditambahkan --</option>
                                     @foreach($barangs as $brg)
                                         <option value="{{ $brg->kode_barcode }}" data-nama="{{ $brg->nama_barang }}" data-harga="{{ $brg->harga_beli }}">
                                             {{ $brg->kode_barcode }} - {{ $brg->nama_barang }}
@@ -72,7 +72,7 @@
                                 <thead>
                                     <tr>
                                         <th>Kode Barcode</th>
-                                        <th>Nama Barang</th>
+                                        <th>Nama {{ label('product') }}</th>
                                         <th width="15%">Harga Beli (Rp)</th>
                                         <th width="10%">Jumlah</th>
                                         <th width="15%">Subtotal (Rp)</th>
@@ -112,7 +112,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-success m-t-15 waves-effect" id="btnSimpan">SIMPAN BARANG MASUK</button>
+                        <button type="submit" class="btn btn-success m-t-15 waves-effect" id="btnSimpan">SIMPAN {{ strtoupper(label('product')) }} MASUK</button>
                         <a href="{{ route('pembelian.index') }}" class="btn btn-default m-t-15 waves-effect">BATAL</a>
                     </form>
                 </div>

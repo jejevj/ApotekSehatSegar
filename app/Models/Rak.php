@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTenantScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Rak extends Model
 {
+    use HasTenantScope;
+
     protected $table = 'tb_rak';
-    protected $fillable = ['nama_lokasi', 'nama_rak'];
+    protected $fillable = ['store_id', 'nama_lokasi', 'nama_rak'];
 
     public function barangs()
     {

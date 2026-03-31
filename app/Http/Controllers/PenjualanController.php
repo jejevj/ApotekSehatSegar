@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Penjualan;
 use App\Models\Barang;
 use App\Models\Pelanggan;
+use App\Services\BusinessConfigService;
+use App\Services\FnbHppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -72,7 +74,8 @@ class PenjualanController extends Controller
     {
         // Jika tidak ada kode penjualan di URL, buat baru dan redirect
         if (!$request->has('kodepj')) {
-            $newKodePenjualan = 'PJ-' . rand(1000000000, 9999999999);
+            $prefix = app(\App\Services\BusinessConfigService::class)->getTransactionPrefix();
+            $newKodePenjualan = $prefix . '-' . rand(1000000000, 9999999999);
             return redirect()->route('penjualan.create', ['kodepj' => $newKodePenjualan]);
         }
 
@@ -349,13 +352,26 @@ class PenjualanController extends Controller
         );
 
         if ($request->expectsJson() && $request->action_type === 'print') {
+            // FnB: deduct ingredient stock
+            if (app(BusinessConfigService::class)->get('business_type') === 'fnb') {
+                app(FnbHppService::class)->deductStockForTransaction($kode_penjualan);
+            }
             return response()->json([
                 'print_url' => route('penjualan.cetakStruk', ['kode_pjl' => $kode_penjualan]),
             ]);
         }
 
         if ($request->action_type === 'print') {
+            // FnB: deduct ingredient stock
+            if (app(BusinessConfigService::class)->get('business_type') === 'fnb') {
+                app(FnbHppService::class)->deductStockForTransaction($kode_penjualan);
+            }
             return redirect()->route('penjualan.cetakStruk', ['kode_pjl' => $kode_penjualan]);
+        }
+
+        // FnB: deduct ingredient stock
+        if (app(BusinessConfigService::class)->get('business_type') === 'fnb') {
+            app(FnbHppService::class)->deductStockForTransaction($kode_penjualan);
         }
 
         return redirect()->route('penjualan.index')->with('success', 'Transaksi berhasil disimpan');
@@ -502,6 +518,11 @@ class PenjualanController extends Controller
     public function destroy($id)
     {
         // $id is kode_penjualan here
+        // FnB: restore ingredient stock sebelum hapus
+        if (app(BusinessConfigService::class)->get('business_type') === 'fnb') {
+            app(FnbHppService::class)->restoreStockForTransaction($id);
+        }
+
         Penjualan::where('kode_penjualan', $id)->delete();
         DB::table('tb_penjualan_detail')->where('kode_penjualan', $id)->delete();
         

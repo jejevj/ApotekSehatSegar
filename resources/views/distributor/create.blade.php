@@ -3,19 +3,19 @@
 @section('content')
 <div class="container-fluid">
     <div class="block-header">
-        <h2>TAMBAH DISTRIBUTOR</h2>
+        <h2>TAMBAH {{ strtoupper(label('supplier')) }}</h2>
     </div>
 
     <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card">
                 <div class="header">
-                    <h2>FORM TAMBAH DISTRIBUTOR</h2>
+                    <h2>FORM TAMBAH {{ strtoupper(label('supplier')) }}</h2>
                 </div>
                 <div class="body">
                     <form action="{{ route('distributor.store') }}" method="POST">
                         @csrf
-                        <label for="nama">Nama Distributor</label>
+                        <label for="nama">Nama {{ label('supplier') }}</label>
                         <div class="form-group">
                             <div class="form-line">
                                 <input type="text" id="nama" name="nama" class="form-control" placeholder="Masukkan nama distributor" required>

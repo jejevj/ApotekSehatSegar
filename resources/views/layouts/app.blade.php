@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>{{ $setting->nama_aplikasi ?? 'Apotek App' }} | Point of Sale</title>
     <!-- Favicon-->
-    <link rel="icon" href="{{ $setting->favicon ? asset('images/' . $setting->favicon) : asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ ($setting && $setting->favicon) ? asset('images/' . $setting->favicon) : asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
@@ -132,6 +132,12 @@
 
                                 // Sembunyikan menu billing jika user bukan admin atau super_admin
                                 if ($menu->route_name === 'billing.index' && !in_array(auth()->user()->role->slug, ['admin', 'super_admin'])) {
+                                    continue;
+                                }
+
+                                // Sembunyikan menu FnB jika business_type bukan fnb
+                                $fnbRoutes = ['fnb.ingredients.index', 'fnb.recipes.index', 'fnb.hpp.index'];
+                                if (in_array($menu->route_name, $fnbRoutes) && app(\App\Services\BusinessConfigService::class)->get('business_type') !== 'fnb') {
                                     continue;
                                 }
 

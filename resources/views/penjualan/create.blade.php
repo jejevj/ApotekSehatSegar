@@ -41,7 +41,7 @@
                     
                     <div class="row clearfix">
                         <div class="col-md-3">
-                            <label>Pelanggan</label>
+                            <label>{{ label('customer') }}</label>
                             <div class="input-group" style="margin-bottom: 0;">
                                 <div class="form-line">
                                     <select name="id_pelanggan" id="id_pelanggan" class="form-control show-tick" data-container="body">
@@ -77,7 +77,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Kode Barcode</th>
-                                    <th>Nama Barang</th>
+                                    <th>Nama {{ label('product') }}</th>
                                     <th>Harga Normal</th>
                                     <th>Harga Jual</th>
                                 <th>Jumlah</th>

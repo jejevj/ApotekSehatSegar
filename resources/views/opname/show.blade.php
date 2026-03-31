@@ -44,7 +44,7 @@
                                 <i class="material-icons">trending_down</i>
                             </div>
                             <div class="content">
-                                <div class="text">TOTAL KERUGIAN ({{ $opname->items->where('selisih', '<', 0)->count() }} Jenis Barang)</div>
+                                <div class="text">TOTAL KERUGIAN ({{ $opname->items->where('selisih', '<', 0)->count() }} Jenis {{ label('product') }})</div>
                                 <div class="number">Rp {{ number_format($opname->total_nilai_rugi, 0, ',', '.') }}</div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                                 <i class="material-icons">trending_up</i>
                             </div>
                             <div class="content">
-                                <div class="text">TOTAL KELEBIHAN ({{ $opname->items->where('selisih', '>', 0)->count() }} Jenis Barang)</div>
+                                <div class="text">TOTAL KELEBIHAN ({{ $opname->items->where('selisih', '>', 0)->count() }} Jenis {{ label('product') }})</div>
                                 <div class="number">Rp {{ number_format($opname->total_nilai_lebih, 0, ',', '.') }}</div>
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Barcode</th>
-                                <th>Nama Barang</th>
+                                <th>Nama {{ label('product') }}</th>
                                 <th width="12%">Harga Beli</th>
                                 <th width="10%">Stok Sistem</th>
                                 <th width="10%">Stok Fisik</th>

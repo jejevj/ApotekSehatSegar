@@ -28,14 +28,17 @@ class BarangController extends Controller
     public function data()
     {
         $barangs = Barang::with(['rak', 'category']);
+        $showLocation = app(\App\Services\BusinessConfigService::class)->showProductLocation();
+        $isFnb = app(\App\Services\BusinessConfigService::class)->get('business_type') === 'fnb';
+
         return DataTables::of($barangs)
             ->addIndexColumn()
-            ->addColumn('nama_barang_formatted', function ($barang) {
+            ->addColumn('nama_barang_formatted', function ($barang) use ($showLocation) {
                 $warnings = [];
-                if ($barang->category_id == 1) { // ID 1 = Belum Memiliki Kategori
+                if ($barang->category_id == 1) {
                     $warnings[] = 'Belum memiliki kategori';
                 }
-                if (is_null($barang->rak_id)) {
+                if ($showLocation && is_null($barang->rak_id)) {
                     $warnings[] = 'Belum memiliki rak';
                 }
 
@@ -50,13 +53,31 @@ class BarangController extends Controller
             ->addColumn('nama_kategori', function ($barang) {
                 return $barang->category->nama_kategori;
             })
-            ->addColumn('nama_lokasi_rak', function ($barang) {
+            ->addColumn('nama_lokasi_rak', function ($barang) use ($showLocation) {
+                if (!$showLocation) return '-';
+                if (is_null($barang->rak_id) || is_null($barang->rak)) return '-';
                 return $barang->rak->nama_lokasi . ' - ' . $barang->rak->nama_rak;
             })
-            ->addColumn('aksi', function ($barang) {
+            ->addColumn('hpp_margin', function ($barang) use ($isFnb) {
+                if (!$isFnb) return '-';
+                $recipe = \App\Models\FnbRecipe::where('menu_id', $barang->kode_barcode)
+                    ->orderByDesc('updated_at')->first();
+                if (!$recipe) {
+                    return '<span class="text-muted" style="font-size:11px;">Belum ada resep</span>';
+                }
+                $hpp = $recipe->hpp_per_porsi;
+                $hargaJual = (int) $barang->harga_jual;
+                $margin = $hargaJual > 0 ? round((($hargaJual - $hpp) / $hargaJual) * 100, 1) : 0;
+                $color = $margin >= 0 ? 'text-green' : 'text-red';
+                return 'Rp ' . number_format($hpp, 0, ',', '.') . ' <small class="' . $color . '">(' . $margin . '%)</small>';
+            })
+            ->addColumn('aksi', function ($barang) use ($isFnb) {
                 $buttons = '';
                 if (auth()->user()->hasPermission('barang.update')) {
                     $buttons .= '<a href="' . route('barang.edit', $barang->kode_barcode) . '" class="btn btn-success"><i class="material-icons">edit</i></a> ';
+                }
+                if ($isFnb && auth()->user()->hasPermission('recipes.view')) {
+                    $buttons .= '<a href="' . route('fnb.recipes.index', ['menu_id' => $barang->kode_barcode]) . '" class="btn btn-info btn-sm" title="Kelola Resep"><i class="material-icons">menu_book</i></a> ';
                 }
                 if (auth()->user()->hasPermission('barang.delete')) {
                     $buttons .= '<form action="' . route('barang.destroy', $barang->kode_barcode) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Apakah Anda Yakin Akan Mengahapus Data ini???\')">' .
@@ -66,7 +87,7 @@ class BarangController extends Controller
                 }
                 return $buttons;
             })
-            ->rawColumns(['nama_barang_formatted', 'aksi'])
+            ->rawColumns(['nama_barang_formatted', 'hpp_margin', 'aksi'])
             ->make(true);
     }
 

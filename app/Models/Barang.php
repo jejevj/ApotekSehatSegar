@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTenantScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Barang extends Model
 {
+    use HasTenantScope;
+
     protected $table = 'tb_barang';
     public $timestamps = false;
     protected $primaryKey = 'kode_barcode';
@@ -13,6 +16,7 @@ class Barang extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'store_id',
         'kode_barcode',
         'nama_barang',
         'category_id',

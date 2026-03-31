@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="block-header">
-        <h2>DATA BARANG MASUK (PEMBELIAN)</h2>
+        <h2>DATA {{ strtoupper(label('product')) }} MASUK ({{ strtoupper(label('purchase')) }})</h2>
     </div>
 
     <div class="row clearfix">
@@ -11,14 +11,14 @@
             <div class="card">
                 <div class="header">
                     <h2>
-                        DAFTAR BARANG MASUK
+                        DAFTAR {{ strtoupper(label('product')) }} MASUK
                     </h2>
                     @if(auth()->user()->hasPermission('pembelian.create'))
                     <ul class="header-dropdown m-r--5">
                         <li>
                             <a href="{{ route('pembelian.create') }}" class="btn btn-primary waves-effect" style="color: white;">
                                 <i class="material-icons">add</i>
-                                <span>TAMBAH BARANG MASUK</span>
+                                <span>TAMBAH {{ strtoupper(label('product')) }} MASUK</span>
                             </a>
                         </li>
                     </ul>
@@ -32,7 +32,7 @@
                                     <th width="5%">No</th>
                                     <th>No Faktur</th>
                                     <th>Tanggal</th>
-                                    <th>Distributor</th>
+                                    <th>{{ label('supplier') }}</th>
                                     <th>Total</th>
                                     <th>Sisa Tagihan</th>
                                     <th>Status</th>

@@ -19,12 +19,50 @@ use App\Http\Controllers\PembelianController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SetupWizardController;
+use App\Http\Controllers\BusinessConfigController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth', 'billing.guard'])->group(function () {
+// Admin Panel (Super Admin only)
+Route::prefix('admin')
+    ->middleware(['auth', 'super_admin.guard'])
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        // Manajemen Toko
+        Route::resource('stores', \App\Http\Controllers\Admin\StoreController::class);
+
+        // Manajemen User per Toko
+        Route::get('stores/{store}/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('stores.users');
+        Route::get('stores/{store}/users/create', [\App\Http\Controllers\Admin\AdminUserController::class, 'create'])->name('stores.users.create');
+        Route::post('stores/{store}/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'store'])->name('stores.users.store');
+        Route::get('stores/{store}/users/{user}/edit', [\App\Http\Controllers\Admin\AdminUserController::class, 'edit'])->name('stores.users.edit');
+        Route::put('stores/{store}/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'update'])->name('stores.users.update');
+        Route::delete('stores/{store}/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('stores.users.destroy');
+
+        // Manajemen Billing per Toko
+        Route::get('stores/{store}/billing', [\App\Http\Controllers\Admin\AdminBillingController::class, 'index'])->name('stores.billing');
+        Route::get('stores/{store}/billing/create', [\App\Http\Controllers\Admin\AdminBillingController::class, 'create'])->name('stores.billing.create');
+        Route::post('stores/{store}/billing', [\App\Http\Controllers\Admin\AdminBillingController::class, 'store'])->name('stores.billing.store');
+        Route::patch('stores/{store}/billing/{billing}/activate', [\App\Http\Controllers\Admin\AdminBillingController::class, 'activate'])->name('stores.billing.activate');
+        Route::patch('stores/{store}/billing/{billing}/status/{status}', [\App\Http\Controllers\Admin\AdminBillingController::class, 'setStatus'])->name('stores.billing.status');
+
+        // Konfigurasi Bisnis per Toko
+        Route::get('stores/{store}/business-config', [\App\Http\Controllers\Admin\AdminBusinessConfigController::class, 'index'])->name('stores.business-config');
+        Route::put('stores/{store}/business-config', [\App\Http\Controllers\Admin\AdminBusinessConfigController::class, 'update'])->name('stores.business-config.update');
+    });
+
+// Setup Wizard
+Route::middleware(['auth'])->group(function () {
+    Route::get('/setup', [SetupWizardController::class, 'index'])->name('setup.index');
+    Route::post('/setup', [SetupWizardController::class, 'store'])->name('setup.store');
+});
+
+Route::middleware(['auth', 'store_user.guard', 'billing.guard', 'setup.guard'])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
     Route::get('/summary-data', [HomeController::class, 'summaryData'])->name('summary.data');
     Route::get('/chart-data', [HomeController::class, 'chartData'])->name('chart.data');
@@ -36,6 +74,13 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
     Route::middleware('permission:setting.view')->group(function () {
         Route::get('setting', [SettingController::class, 'index'])->name('setting.index');
         Route::put('setting', [SettingController::class, 'update'])->name('setting.update');
+    });
+
+    // Konfigurasi Bisnis
+    Route::middleware('permission:setting.view')->group(function () {
+        Route::get('business-config', [BusinessConfigController::class, 'index'])->name('business-config.index');
+        Route::put('business-config', [BusinessConfigController::class, 'update'])->name('business-config.update');
+        Route::get('business-config/preset/{businessType}', [BusinessConfigController::class, 'getPreset'])->name('business-config.preset');
     });
 
     // Satuan Barang
@@ -272,3 +317,32 @@ Route::middleware(['auth', 'billing.guard'])->group(function () {
 
 // Billing restricted page
 Route::middleware('billing.guard')->get('/billing/restricted', [\App\Http\Controllers\BillingController::class, 'restricted'])->name('billing.restricted');
+
+// FnB Module Routes
+Route::middleware(['auth', 'store_user.guard', 'billing.guard', 'setup.guard', 'fnb.guard'])
+    ->prefix('fnb')
+    ->name('fnb.')
+    ->group(function () {
+        // Bahan Baku (Ingredients)
+        Route::get('ingredients/search', [\App\Http\Controllers\FnbIngredientController::class, 'search'])->name('ingredients.search');
+        Route::get('ingredients/data', [\App\Http\Controllers\FnbIngredientController::class, 'data'])->middleware('permission:ingredients.view')->name('ingredients.data');
+        Route::get('ingredients', [\App\Http\Controllers\FnbIngredientController::class, 'index'])->middleware('permission:ingredients.view')->name('ingredients.index');
+        Route::get('ingredients/create', [\App\Http\Controllers\FnbIngredientController::class, 'create'])->middleware('permission:ingredients.create')->name('ingredients.create');
+        Route::post('ingredients', [\App\Http\Controllers\FnbIngredientController::class, 'store'])->middleware('permission:ingredients.create')->name('ingredients.store');
+        Route::get('ingredients/{id}/edit', [\App\Http\Controllers\FnbIngredientController::class, 'edit'])->middleware('permission:ingredients.update')->name('ingredients.edit');
+        Route::put('ingredients/{id}', [\App\Http\Controllers\FnbIngredientController::class, 'update'])->middleware('permission:ingredients.update')->name('ingredients.update');
+        Route::delete('ingredients/{id}', [\App\Http\Controllers\FnbIngredientController::class, 'destroy'])->middleware('permission:ingredients.delete')->name('ingredients.destroy');
+
+        // Resep (Recipes)
+        Route::get('recipes/data', [\App\Http\Controllers\FnbRecipeController::class, 'data'])->middleware('permission:recipes.view')->name('recipes.data');
+        Route::get('recipes', [\App\Http\Controllers\FnbRecipeController::class, 'index'])->middleware('permission:recipes.view')->name('recipes.index');
+        Route::get('recipes/create', [\App\Http\Controllers\FnbRecipeController::class, 'create'])->middleware('permission:recipes.create')->name('recipes.create');
+        Route::post('recipes', [\App\Http\Controllers\FnbRecipeController::class, 'store'])->middleware('permission:recipes.create')->name('recipes.store');
+        Route::get('recipes/{id}/edit', [\App\Http\Controllers\FnbRecipeController::class, 'edit'])->middleware('permission:recipes.update')->name('recipes.edit');
+        Route::put('recipes/{id}', [\App\Http\Controllers\FnbRecipeController::class, 'update'])->middleware('permission:recipes.update')->name('recipes.update');
+        Route::delete('recipes/{id}', [\App\Http\Controllers\FnbRecipeController::class, 'destroy'])->middleware('permission:recipes.delete')->name('recipes.destroy');
+
+        // Laporan HPP
+        Route::get('hpp', [\App\Http\Controllers\FnbHppReportController::class, 'index'])->middleware('permission:hpp.view')->name('hpp.index');
+        Route::get('hpp/print', [\App\Http\Controllers\FnbHppReportController::class, 'print'])->middleware('permission:hpp.view')->name('hpp.print');
+    });

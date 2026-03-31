@@ -120,6 +120,28 @@ class MenuSeeder extends Seeder
                 'permission_slug' => 'metode_pembayaran.view',
                 'order' => 15,
             ],
+            // FnB Module menus
+            [
+                'name' => 'Bahan Baku',
+                'icon' => 'kitchen',
+                'route_name' => 'fnb.ingredients.index',
+                'permission_slug' => 'ingredients.view',
+                'order' => 16,
+            ],
+            [
+                'name' => 'Resep Menu',
+                'icon' => 'menu_book',
+                'route_name' => 'fnb.recipes.index',
+                'permission_slug' => 'recipes.view',
+                'order' => 17,
+            ],
+            [
+                'name' => 'Laporan HPP',
+                'icon' => 'calculate',
+                'route_name' => 'fnb.hpp.index',
+                'permission_slug' => 'hpp.view',
+                'order' => 18,
+            ],
         ];
 
         foreach ($menus as $menuData) {
@@ -127,9 +149,13 @@ class MenuSeeder extends Seeder
         }
 
         // Assign menus to roles
-        $superAdminRole = Role::where('slug', 'super_admin')->first();
-        $adminRole = Role::where('slug', 'admin')->first();
-        $kasirRole = Role::where('slug', 'kasir')->first();
+        // Gunakan withoutGlobalScope agar TenantScope tidak memfilter role global (store_id = null)
+        $superAdminRole = Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)
+            ->where('slug', 'super_admin')->whereNull('store_id')->first();
+        $adminRole = Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)
+            ->where('slug', 'admin')->whereNull('store_id')->first();
+        $kasirRole = Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)
+            ->where('slug', 'kasir')->whereNull('store_id')->first();
 
         if ($superAdminRole) {
             $superAdminRole->menus()->sync(Menu::pluck('id'));
@@ -146,7 +172,7 @@ class MenuSeeder extends Seeder
 
         // Auto sync menus for all other roles based on their permissions (prevents empty sidebar)
         $allMenus = Menu::all();
-        foreach (Role::with('permissions')->get() as $role) {
+        foreach (Role::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)->with('permissions')->get() as $role) {
             if (in_array($role->slug, ['super_admin', 'admin', 'kasir'], true)) {
                 continue;
             }

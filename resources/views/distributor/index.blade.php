@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="block-header">
-        <h2>DATA DISTRIBUTOR</h2>
+        <h2>DATA {{ strtoupper(label('supplier')) }}</h2>
     </div>
 
     <div class="row clearfix">
@@ -11,14 +11,14 @@
             <div class="card">
                 <div class="header">
                     <h2>
-                        DAFTAR DISTRIBUTOR
+                        DAFTAR {{ strtoupper(label('supplier')) }}
                     </h2>
                     @if(auth()->user()->hasPermission('distributor.create'))
                     <ul class="header-dropdown m-r--5">
                         <li>
                             <a href="{{ route('distributor.create') }}" class="btn btn-primary waves-effect" style="color: white;">
                                 <i class="material-icons">add</i>
-                                <span>TAMBAH DISTRIBUTOR</span>
+                                <span>TAMBAH {{ strtoupper(label('supplier')) }}</span>
                             </a>
                         </li>
                     </ul>

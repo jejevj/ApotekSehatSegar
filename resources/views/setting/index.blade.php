@@ -98,6 +98,9 @@
                     </div>
 
                     <div class="m-t-20 text-right">
+                        <a href="{{ route('business-config.index') }}" class="btn btn-default btn-lg waves-effect m-r-10">
+                            <i class="material-icons">tune</i> Konfigurasi Bisnis
+                        </a>
                         <button type="submit" class="btn btn-primary btn-lg waves-effect"><i class="material-icons">save</i> Simpan Perubahan</button>
                     </div>
                 </form>

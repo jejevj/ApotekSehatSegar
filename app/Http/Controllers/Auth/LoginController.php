@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\StoreContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,16 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            $user = Auth::user();
+
+            if ($user->store_id !== null) {
+                StoreContext::set($user->store_id);
+            }
+
+            if ($user->hasRole('super_admin')) {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->intended('/');
         }
 
@@ -33,6 +44,7 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        StoreContext::clear();
         Auth::logout();
 
         $request->session()->invalidate();

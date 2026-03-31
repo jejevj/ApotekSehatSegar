@@ -49,7 +49,7 @@
                                     <td>{{ $waktu }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Pelanggan</th>
+                                    <th>{{ label('customer') }}</th>
                                     <td>{{ $penjualan->pelanggan_nama ?? '-' }}</td>
                                 </tr>
                                 <tr>
@@ -69,7 +69,7 @@
                             <thead>
                                 <tr>
                                     <th width="50">No</th>
-                                    <th>Produk</th>
+                                    <th>{{ label('product') }}</th>
                                     <th width="120">Harga</th>
                                     <th width="100">Jumlah</th>
                                     <th width="140">Diskon/Item</th>

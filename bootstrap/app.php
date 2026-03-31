@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'permission' => \App\Http\Middleware\CheckPermission::class,
             'billing.guard' => \App\Http\Middleware\BillingGuard::class,
+            'setup.guard' => \App\Http\Middleware\SetupGuard::class,
+            'super_admin.guard' => \App\Http\Middleware\SuperAdminGuard::class,
+            'store_user.guard' => \App\Http\Middleware\StoreUserGuard::class,
+            'fnb.guard' => \App\Http\Middleware\FnbModuleGuard::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

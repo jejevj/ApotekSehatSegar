@@ -5,7 +5,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card" style="border-radius: 10px;">
             <div class="header">
-                <h2>EDIT PELANGGAN</h2>
+                <h2>EDIT {{ strtoupper(label('customer')) }}</h2>
             </div>
             <div class="body">
                 <form action="{{ route('pelanggan.update', $pelanggan->kode_pelanggan) }}" method="POST">
@@ -14,7 +14,7 @@
                     <label for="nama">Nama</label>
                     <div class="form-group">
                         <div class="form-line">
-                            <input type="text" name="nama" class="form-control" value="{{ $pelanggan->nama }}" placeholder="Masukkan Nama Pelanggan" required />
+                            <input type="text" name="nama" class="form-control" value="{{ $pelanggan->nama }}" placeholder="Masukkan Nama {{ label('customer') }}" required />
                         </div>
                     </div>
 

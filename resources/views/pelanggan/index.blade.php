@@ -5,7 +5,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card" style="border-radius: 10px;">
             <div class="header">
-                <h2>DATA PELANGGAN</h2>
+                <h2>DATA {{ strtoupper(label('customer')) }}</h2>
                 @if(auth()->user()->hasPermission('pelanggan.create'))
                 <a href="{{ route('pelanggan.create') }}" class="btn btn-primary"><i class="material-icons">add</i></a>
                 @endif

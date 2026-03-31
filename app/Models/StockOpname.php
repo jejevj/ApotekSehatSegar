@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTenantScope;
 use Illuminate\Database\Eloquent\Model;
 
 class StockOpname extends Model
 {
+    use HasTenantScope;
+
     protected $table = 'stock_opnames';
 
     protected $fillable = [
+        'store_id',
         'kode_opname',
         'tanggal',
         'status',

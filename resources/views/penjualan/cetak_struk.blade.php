@@ -21,9 +21,17 @@
 </head>
 <body class="mono">
     <div class="header text-center">
-        <div><strong>APOTEK SEHAT SEGAR</strong></div>
-        <div class="small muted">Jl. Lintas Sumatera KM.0, Muara Bungo</div>
-        <div class="small muted">TERIMA KASIH</div>
+        @php
+            $setting = \App\Models\Setting::first();
+            $businessConfig = app(\App\Services\BusinessConfigService::class);
+        @endphp
+        <div><strong>{{ $setting->nama_aplikasi ?? config('app.name') }}</strong></div>
+        @if(!empty($setting->alamat))
+        <div class="small muted">{{ $setting->alamat }}</div>
+        @endif
+        @if(!empty($setting->telepon))
+        <div class="small muted">{{ $setting->telepon }}</div>
+        @endif
     </div>
 
     <hr>
@@ -49,7 +57,7 @@
         </tr>
         @if($pelanggan && $pelanggan->tipe !== 'umum')
         <tr>
-            <td class="text-left">Pelanggan</td>
+            <td class="text-left">{{ label('customer') }}</td>
             <td class="text-right">{{ $pelanggan->nama }}</td>
         </tr>
         @endif
@@ -172,7 +180,8 @@
     <hr>
 
     <div class="footer text-center">
-        <div class="small muted">Barang yang sudah dibeli tidak dapat dikembalikan</div>
+        @php $receiptFooter = $businessConfig->get('receipt_footer', 'Terima kasih atas kunjungan Anda'); @endphp
+        <div class="small muted">{{ $receiptFooter }}</div>
     </div>
     <script>
         window.addEventListener('load', function () {

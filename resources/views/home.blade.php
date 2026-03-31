@@ -59,7 +59,7 @@
                     <i class="material-icons">playlist_add_check</i>
                 </div>
                 <div class="content">
-                    <div class="text">BARANG TERJUAL</div>
+                    <div class="text">{{ strtoupper(label('product')) }} TERJUAL</div>
                     <div class="number" id="valBarangTerjual" title="0">0</div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                     <i class="material-icons">person_add</i>
                 </div>
                 <div class="content">
-                    <div class="text">PELANGGAN AKTIF</div>
+                    <div class="text">{{ strtoupper(label('customer')) }} AKTIF</div>
                     <div class="number" id="valPelangganAktif" title="0">0</div>
                 </div>
             </div>
@@ -121,13 +121,24 @@
             </div>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-            <div class="info-box bg-red hover-expand-effect" title="Total sisa hutang pembelian yang belum lunas ke distributor.">
+            <div class="info-box bg-red hover-expand-effect" title="Total sisa hutang pembelian yang belum lunas ke {{ label('supplier') }}.">
                 <div class="icon">
                     <i class="material-icons">money_off</i>
                 </div>
                 <div class="content">
-                    <div class="text">TOTAL SISA HUTANG KE DISTRIBUTOR</div>
+                    <div class="text">TOTAL SISA HUTANG KE {{ strtoupper(label('supplier')) }}</div>
                     <div class="number" title="Rp {{ number_format($totalSisaHutang, 0, ',', '.') }}">Rp {{ number_format($totalSisaHutang, 0, ',', '.') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="info-box bg-amber hover-expand-effect" title="{{ label('product') }} dengan stok di bawah threshold.">
+                <div class="icon">
+                    <i class="material-icons">warning</i>
+                </div>
+                <div class="content">
+                    <div class="text">{{ strtoupper(label('product')) }} STOK RENDAH</div>
+                    <div class="number" title="{{ $lowStockCount }}">{{ $lowStockCount }}</div>
                 </div>
             </div>
         </div>
@@ -234,7 +245,7 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Nama Produk</th>
+                                    <th>Nama {{ label('product') }}</th>
                                     <th>Jumlah Terjual</th>
                                 </tr>
                             </thead>

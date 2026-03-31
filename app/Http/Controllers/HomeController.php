@@ -19,7 +19,11 @@ class HomeController extends Controller
         // Hitung total sisa hutang pembelian yang belum lunas
         $totalSisaHutang = \App\Models\Pembelian::where('status', 'belum_lunas')->sum('sisa');
 
-        return view('home', compact('totalValuasiAset', 'totalSisaHutang'));
+        // Hitung jumlah produk dengan stok rendah berdasarkan threshold dari BusinessConfig
+        $lowStockThreshold = (int) app(\App\Services\BusinessConfigService::class)->get('low_stock_threshold', 10);
+        $lowStockCount = Barang::where('stok', '<=', $lowStockThreshold)->count();
+
+        return view('home', compact('totalValuasiAset', 'totalSisaHutang', 'lowStockCount'));
     }
 
     private function getDateRange(Request $request)
