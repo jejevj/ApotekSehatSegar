@@ -8,7 +8,6 @@
 /storage/framework/testing
 /bootstrap/cache/*.php
 !bootstrap/cache/.gitignore
-.env
 .git
 .gitignore
 .DS_Store
