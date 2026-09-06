@@ -12,8 +12,10 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 
-if [ -z "$(grep '^APP_KEY=' .env | cut -d'=' -f2)" ] || [ "$(grep '^APP_KEY=' .env | cut -d'=' -f2)" = "" ]; then
+# Force regenerate APP_KEY if not set or empty
+if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
     echo "Generating application key..."
+    sed -i 's/^APP_KEY=.*/APP_KEY=/' .env
     php artisan key:generate --force
 fi
 
