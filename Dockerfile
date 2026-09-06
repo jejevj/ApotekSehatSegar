@@ -32,14 +32,29 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copy application files first (needed for composer install)
 COPY composer.json composer.lock artisan ./
 COPY bootstrap/ ./bootstrap/
+COPY routes/ ./routes/
+COPY .env .env.example ./
+COPY package.json package-lock.json* ./
+COPY app/ ./app/
+COPY config/ ./config/
+COPY database/ ./database/
+COPY public/ ./public/
+COPY resources/ ./resources/
+COPY storage/ ./storage/ 2>/dev/null || true
+COPY tests/ ./tests/ 2>/dev/null || true
+COPY vendor/ ./vendor/ 2>/dev/null || true
+
+# Install PHP dependencies first (before any package discovery)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
-COPY package.json package-lock.json* ./
+# Install Node dependencies
 RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev 2>/dev/null || true
 
-COPY . .
+# Build assets
+RUN npm run build 2>/dev/null || true
 
 RUN npm run build 2>/dev/null || true
 
