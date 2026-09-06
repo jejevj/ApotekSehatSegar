@@ -36,16 +36,17 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock artisan ./
 COPY bootstrap/ ./bootstrap/
 COPY routes/ ./routes/
-COPY .env .env.example ./
 COPY package.json package-lock.json* ./
 COPY app/ ./app/
 COPY config/ ./config/
 COPY database/ ./database/
 COPY public/ ./public/
 COPY resources/ ./resources/
-COPY storage/ ./storage/ 2>/dev/null || true
-COPY tests/ ./tests/ 2>/dev/null || true
-COPY vendor/ ./vendor/ 2>/dev/null || true
+COPY storage/ ./storage/
+COPY tests/ ./tests/
+
+# Copy environment files
+COPY .env .env.example ./
 
 # Install PHP dependencies first (before any package discovery)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
