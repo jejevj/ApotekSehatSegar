@@ -32,7 +32,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
+COPY composer.json composer.lock artisan ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 COPY package.json package-lock.json* ./
