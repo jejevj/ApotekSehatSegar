@@ -32,7 +32,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock artisan ./
+COPY composer.json composer.lock artisan bootstrap/app.php bootstrap/providers.php ./
+COPY bootstrap/ ./bootstrap/
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 COPY package.json package-lock.json* ./
