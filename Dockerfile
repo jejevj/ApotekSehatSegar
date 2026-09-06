@@ -107,11 +107,6 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 7000
 
-
 ENTRYPOINT ["entrypoint.sh"]
 
-CMD [
-    "/usr/bin/supervisord",
-    "-c",
-    "/etc/supervisor/conf.d/supervisord.conf"
-]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
