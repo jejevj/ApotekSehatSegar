@@ -2,9 +2,6 @@
 
 set -e
 
-mkdir -p /var/log/supervisor
-mkdir -p /var/run
-
 echo "Starting Laravel application..."
 
 if [ ! -f .env ]; then
@@ -30,5 +27,5 @@ php artisan view:cache || true
 echo "Creating storage link..."
 php artisan storage:link || true
 
-echo "Starting services..."
+echo "Starting php artisan serve..."
 exec "$@"
